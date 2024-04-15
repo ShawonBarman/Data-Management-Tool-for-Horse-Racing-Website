@@ -1,0 +1,678 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <title>All Meetings Data View Page</title>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+    <style>
+        *{
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+
+        h1, h2, h3, h4, h5, h6, p{
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar{
+            background: #F1FAFF !important;
+        }
+
+        .navbar-brand{
+            color: #000;
+            font-size: 1.5rem;
+        }
+
+        .nav-item .nav-link{
+            font-size: 1rem;
+            color: #000 !important;
+        }
+
+        .nav-item .nav-link.active{
+            font-weight: 600;
+        }
+
+        .searching_part{
+            background: #e5e3e3;
+            width: 600px;
+            margin: 20px auto;
+            padding: 20px 80px;
+            border-radius: 10px;
+        }
+
+        .searching_part input{
+            border-radius: 5px;
+            border: none;
+            outline: none;
+            width: 100%;
+            height: 35px;
+        }
+
+        .searching_part form button{
+            border-radius: 5px;
+            border: none;
+            width: 100%;
+            height: 35px;
+            background: #0EA432;
+            color: #fff;
+            transition: 0.4s all;
+            cursor: pointer;
+        }
+
+        .searching_part form button:hover{
+            background: #0e842a;
+            color: #fff;
+        }
+
+        .data_section h6{
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .data_section table thead{
+            background: #fafafa;
+            color: #000;
+        }
+
+        .data_section table tr th{
+            font-size: 0.9rem;
+            border: none;
+            white-space: nowrap;
+        }
+
+        .data_section table tr td{
+            font-size: 0.9rem;
+            margin: auto 0;
+            border: none;
+        }
+
+        .data_section table tr td .btn{
+            font-size: 0.9rem;
+        }
+
+        .data_section table tfoot tr td{
+            padding-top: 15px;
+            padding-bottom: 15px;
+            border: none;
+        }
+
+        .data_section .lightGreenBtn{
+            background: #0EA432;
+            color: #fff;
+            transition: 0.4s all;
+        }
+
+        .data_section .lightGreenBtn:hover{
+            background: #0e842a;
+            color: #fff;
+        }
+
+        .table>:not(caption)>*>* {
+            padding: 0.5rem 0.8rem;
+        }
+
+        tbody, td, th, thead, tr {
+            border-color: inherit;
+            border-style: groove;
+            border-width: 1px;
+        }
+
+        #loader-overlay{
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            display: none;
+            z-index: 1000;
+        }
+
+        .loader{
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 2s linear infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes spin {
+            0% {transform: rotate(0deg);}
+            100% {transform: rotate(360deg);}
+        }
+
+        .hidden{
+            display: none;
+        }
+
+        .pagination {
+            margin: 20px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .pagination-link {
+            color: #007bff;
+            text-decoration: none;
+            padding: 2px 10px;
+            border: 1px solid #007bff;
+            border-radius: 3px;
+            margin-left: 15px;
+            transition: 0.3s all;
+        }
+        
+        .pagination-link:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+        
+        .current {
+            font-weight: bold;
+        }
+    </style>
+  </head>
+  <body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="{% url 'home' %}">HorseRacingApp</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item ms-md-3 mx-auto">
+                            <a class="nav-link" href="{% url 'home' %}">Home</a>
+                        </li>
+                        <li class="nav-item ms-md-3 mx-auto">
+                            <a class="nav-link active" aria-current="page" href="{% url 'allMeetingsData_view' %}">All Meetings Data View</a>
+                        </li>
+                        <li class="nav-item ms-md-3 mx-auto">
+                            <a class="nav-link" href="#">Form All Meetings Data View</a>
+                        </li>
+                        <li class="nav-item ms-md-3 mx-auto">
+                            <a class="nav-link" href="#">Meeting Ratings Data View</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    {% if success_msg %}
+        <h6 class="text-center alert alert-primary my-2 fs-4" id="success_message" style="position: absolute; width: 100%;">{{success_msg}}</h6>
+        <script>
+            function hideErrorMessage(){
+                var error_message = document.getElementById("success_message");
+                error_message.style.display = "none";
+            }
+            setTimeout(hideErrorMessage, 2000);
+        </script>
+    {% endif %} 
+    {% if error_msg %}
+        <h6 class="text-center alert alert-danger my-2 fs-4" id="error_message" style="position: absolute; width: 100%;">{{error_msg}}</h6>
+        <script>
+            function hideErrorMessage(){
+                var error_message = document.getElementById("error_message");
+                error_message.style.display = "none";
+            }
+            setTimeout(hideErrorMessage, 2000);
+        </script>
+    {% endif %} 
+
+    <section class="home_main">
+        <div class="container-fluid">
+            <div class="searching_part">
+                <form method="post" action="">
+                    {% csrf_token %}
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-8">
+                            {% if current_date %}
+                            <input type="text" class="form-control" id="search_date" name="search_date" value="{{current_date}}">
+                            {% else %}
+                                <input type="text" class="form-control" id="search_date" name="search_date" placeholder="Select date">
+                            {% endif %}
+                        </div>
+                        <div class="col-4">
+                            <button type="submit" class="btn" name="searchButton">Search</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <section class="data_section">
+        <div class="container-fluid">
+            <div class="showing_data_part">
+                {% if page_obj %}
+                <div class="table-responsive">
+                    <table class="table table-hover" width="100%;">
+                        <thead>
+                            <tr>
+                                <th>File Date</th>
+                                <th>Race Number</th>
+                                <th>Tab Number</th>
+                                <th>Horse</th>
+                                <th>Weight</th>
+                                <th>Claim</th>
+                                <th>Jockey</th>
+                                <th>Trainer</th>
+                                <th>RaceID</th>
+                                <th>JockeyID</th>
+                                <th>TrainerID</th>
+                                <th>Meeting</th>
+                                <th>Track Condition</th>
+                                <th>Barrier</th>
+                                <th>Reliable</th>
+                                <th>Class Change</th>
+                                <th>Historical Run Style</th>
+                                <th>Predicted Sterling Position</th>
+                                <th>PF Score 0-100</th>
+                                <th>Average Historical Settling Position %</th>
+                                <th>Neural Price</th>
+                                <th>Neural Rank</th>
+                                <th>RSFI</th>
+                                <th>Last 600m Ranking Late Speed</th>
+                                <th>S Price</th>
+                                <th>TP20P</th>
+                                <th>Time Ranking Start to Finish</th>
+                                <th>WP20P</th>
+                                <th>Weight Class Rank</th>
+                                <th>WPTP20P</th>
+                                <th>Time Adjust - Weight/Class Rank</th>
+                                <th>ETR Price</th>
+                                <th>Early Time Ranking to 600m Speed</th>
+                                <th>HorseID</th>
+                                <th>Distance</th>
+                                <th>Race Class</th>
+                                <th>Grade</th>
+                                <th>Horse Age</th>
+                                <th>Horse Sex</th>
+                                <th>Form Last 10</th>
+                                <th>Horse Record</th>
+                                <th>Record Distance</th>
+                                <th>Record Track</th>
+                                <th>Record Track Distance</th>
+                                <th>Record Firm</th>
+                                <th>Record Good</th>
+                                <th>Record Soft</th>
+                                <th>Record Heavy</th>
+                                <th>First Up Record</th>
+                                <th>Second Up Record</th>
+                                <th>Form Barrier 1</th>
+                                <th>Form Class 1</th>
+                                <th>Form Distance 1</th>
+                                <th>Form Jockey 1</th>
+                                <th>Form Margin 1</th>
+                                <th>Form Meeting Date 1</th>
+                                <th>Form Other Runners 1</th>
+                                <th>Form Position 1</th>
+                                <th>Form Price 1</th>
+                                <th>Form Time 1</th>
+                                <th>Form Track 1</th>
+                                <th>Form Track Condition 1</th>
+                                <th>Form Weight 1</th>
+                                <th>Meeting id</th>
+                                <th>Race id</th>
+                                <th>Horse id</th>
+                                <th>Foal Date</th>
+                                <th>Second Time 1</th>
+                                <th>Time</th>
+                                <th>Runner Time</th>
+                                <th>Race Starts</th>
+                                <th>Race Wins</th>
+                                <th>Distance Starts</th>
+                                <th>Distance Wins</th>
+                                <th>Track Starts</th>
+                                <th>Track Wins</th>
+                                <th>Track Distance Starts</th>
+                                <th>Track Distance Wins</th>
+                                <th>Good Track Starts</th>
+                                <th>Good Track Wins</th>
+                                <th>Soft Track Starts</th>
+                                <th>Soft Track Wins</th>
+                                <th>Heavy Track Starts</th>
+                                <th>Heavy Track Wins</th>
+                                <th>First Up Starts</th>
+                                <th>First Up Wins</th>
+                                <th>Second Up Starts</th>
+                                <th>Second Up Wins</th>
+                                <th>First Up Placings</th>
+                                <th>Second Up Placings</th>
+                                <th>Race Placings</th>
+                                <th>Distance Placings</th>
+                                <th>Track Placings</th>
+                                <th>Track Distance Placings</th>
+                                <th>Good Track Placings</th>
+                                <th>Soft Track Placings</th>
+                                <th>Heavy Track Placings</th>
+                                <th>RFS</th>
+                                <th>RFS Count</th>
+                                <th>Date</th>
+                                <th>Last 600m</th>
+                                <th>Distance SR</th>
+                                <th>Win SR</th>
+                                <th>Track SR</th>
+                                <th>Track Distance SR</th>
+                                <th>Good Track SR</th>
+                                <th>Soft Track SR</th>
+                                <th>Heavy Track SR</th>
+                                <th>First Up SR</th>
+                                <th>Second Up SR</th>
+                                <th>DLR 1</th>
+                                <th>Form Barrier 2</th>
+                                <th>Form Class 2</th>
+                                <th>Form Distance 2</th>
+                                <th>Form Jockey 2</th>
+                                <th>Form Margin 2</th>
+                                <th>Form Meeting Date 2</th>
+                                <th>Form Other Runners 2</th>
+                                <th>Form Position 2</th>
+                                <th>Form Price 2</th>
+                                <th>Form Track 2</th>
+                                <th>Form Track Condition 2</th>
+                                <th>Form Weight 2</th>
+                                <th>Form Time 2</th>
+                                <th>Second Time 2</th>
+                                <th>DLR 2</th>
+                                <th>Form Barrier 3</th>
+                                <th>Form Class 3</th>
+                                <th>Form Distance 3</th>
+                                <th>Form Jockey 3</th>
+                                <th>Form Margin 3</th>
+                                <th>Form Meeting Date 3</th>
+                                <th>Form Other Runners 3</th>
+                                <th>Form Position 3</th>
+                                <th>Form Price 3</th>
+                                <th>Form Track 3</th>
+                                <th>Form Track Condition 3</th>
+                                <th>Form Weight 3</th>
+                                <th>Form Time 3</th>
+                                <th>Second Time 3</th>
+                                <th>DLR 3</th>
+                                <th>Seconds</th>
+                                <th>Milliseconds</th>
+                                <th>Time1</th>
+                                <th>Weight Change</th>
+                                <th>Distance Change</th>
+                                <th>Barrier Change</th>
+                                <th>Weight Over Limit</th>
+                                <th>Average Speed</th>
+                                <th>DBR 1-2</th>
+                                <th>DBR 2-3</th>
+                                <th>BF Rtd Price</th>
+                                <th>Market Rank</th>
+                                <th>Starters</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in page_obj %}
+                            <tr>
+                                <td>{{ data.file_date }}</td>
+                                <td>{{ data.race_number }}</td>
+                                <td>{{ data.tab_number }}</td>
+                                <td>{{ data.horse }}</td>
+                                <td>{{ data.weight }}</td>
+                                <td>{{ data.claim }}</td>
+                                <td>{{ data.jockey }}</td>
+                                <td>{{ data.trainer }}</td>
+                                <td>{{ data.raceId }}</td>
+                                <td>{{ data.jockeyId }}</td>
+                                <td>{{ data.trainerId }}</td>
+                                <td>{{ data.meeting }}</td>
+                                <td>{{ data.track_condition }}</td>
+                                <td>{{ data.barrier }}</td>
+                                <td>{{ data.reliable }}</td>
+                                <td>{{ data.class_change }}</td>
+                                <td>{{ data.hist_run_style }}</td>
+                                <td>{{ data.pred_stlg_pos }}</td>
+                                <td>{{ data.pf_score }}</td>
+                                <td>{{ data.avg_hist_settling_pos }}</td>
+                                <td>{{ data.neural_price }}</td>
+                                <td>{{ data.neural_rank }}</td>
+                                <td>{{ data.rsfi }}</td>
+                                <td>{{ data.last_600m_ranking_late_speed }}</td>
+                                <td>{{ data.s_price }}</td>
+                                <td>{{ data.tp20p }}</td>
+                                <td>{{ data.time_ranking_start_to_finish }}</td>
+                                <td>{{ data.wp20p }}</td>
+                                <td>{{ data.weight_class_rank }}</td>
+                                <td>{{ data.wptp20p }}</td>
+                                <td>{{ data.time_adjust_weight_class_rank }}</td>
+                                <td>{{ data.etr_price }}</td>
+                                <td>{{ data.early_time_ranking_to_600m_speed }}</td>
+                                <td>{{ data.horseId }}</td>
+                                <td>{{ data.distance }}</td>
+                                <td>{{ data.race_class }}</td>
+                                <td>{{ data.grade }}</td>
+                                <td>{{ data.horse_age }}</td>
+                                <td>{{ data.horse_sex }}</td>
+                                <td>{{ data.form_last_10 }}</td>
+                                <td>{{ data.horse_record }}</td>
+                                <td>{{ data.record_distance }}</td>
+                                <td>{{ data.record_track }}</td>
+                                <td>{{ data.record_track_distance }}</td>
+                                <td>{{ data.record_firm }}</td>
+                                <td>{{ data.record_good }}</td>
+                                <td>{{ data.record_soft }}</td>
+                                <td>{{ data.record_heavy }}</td>
+                                <td>{{ data.first_up_record }}</td>
+                                <td>{{ data.second_up_record }}</td>
+                                <td>{{ data.form_barrier_1 }}</td>
+                                <td>{{ data.form_class_1 }}</td>
+                                <td>{{ data.form_distance_1 }}</td>
+                                <td>{{ data.form_jockey_1 }}</td>
+                                <td>{{ data.form_margin_1 }}</td>
+                                <td>{{ data.form_mtg_date_1 }}</td>
+                                <td>{{ data.form_other_runners_1 }}</td>
+                                <td>{{ data.form_pos_1 }}</td>
+                                <td>{{ data.form_price_1 }}</td>
+                                <td>{{ data.form_time_1 }}</td>
+                                <td>{{ data.form_track_1 }}</td>
+                                <td>{{ data.form_tr_cond_1 }}</td>
+                                <td>{{ data.form_weight_1 }}</td>
+                                <td>{{ data.meeting_id }}</td>
+                                <td>{{ data.race_id }}</td>
+                                <td>{{ data.horse_id }}</td>
+                                <td>{{ data.foal_date }}</td>
+                                <td>{{ data.sec_time_1 }}</td>
+                                <td>{{ data.time }}</td>
+                                <td>{{ data.runner_time }}</td>
+                                <td>{{ data.race_starts }}</td>
+                                <td>{{ data.race_wins }}</td>
+                                <td>{{ data.dist_starts }}</td>
+                                <td>{{ data.dist_wins }}</td>
+                                <td>{{ data.track_starts }}</td>
+                                <td>{{ data.track_wins }}</td>
+                                <td>{{ data.tr_dist_starts }}</td>
+                                <td>{{ data.tr_dist_wins }}</td>
+                                <td>{{ data.good_starts }}</td>
+                                <td>{{ data.good_wins }}</td>
+                                <td>{{ data.soft_starts }}</td>
+                                <td>{{ data.soft_wins }}</td>
+                                <td>{{ data.heavy_starts }}</td>
+                                <td>{{ data.heavy_wins }}</td>
+                                <td>{{ data.first_up_starts }}</td>
+                                <td>{{ data.first_up_wins }}</td>
+                                <td>{{ data.second_up_starts }}</td>
+                                <td>{{ data.second_up_wins }}</td>
+                                <td>{{ data.first_up_placings }}</td>
+                                <td>{{ data.second_up_placings }}</td>
+                                <td>{{ data.race_placings }}</td>
+                                <td>{{ data.dist_placings }}</td>
+                                <td>{{ data.track_placings }}</td>
+                                <td>{{ data.tr_dist_placings }}</td>
+                                <td>{{ data.good_placings }}</td>
+                                <td>{{ data.soft_placings }}</td>
+                                <td>{{ data.heavy_placings }}</td>
+                                <td>{{ data.rfs }}</td>
+                                <td>{{ data.rfs_count }}</td>
+                                <td>{{ data.date }}</td>
+                                <td>{{ data.last_600m }}</td>
+                                <td>{{ data.dist_sr }}</td>
+                                <td>{{ data.win_sr }}</td>
+                                <td>{{ data.track_sr }}</td>
+                                <td>{{ data.tr_dist_sr }}</td>
+                                <td>{{ data.good_sr }}</td>
+                                <td>{{ data.soft_sr }}</td>
+                                <td>{{ data.heavy_sr }}</td>
+                                <td>{{ data.first_up_sr }}</td>
+                                <td>{{ data.second_up_sr }}</td>
+                                <td>{{ data.dlr_1 }}</td>
+                                <td>{{ data.form_barrier_2 }}</td>
+                                <td>{{ data.form_class_2 }}</td>
+                                <td>{{ data.form_distance_2 }}</td>
+                                <td>{{ data.form_jockey_2 }}</td>
+                                <td>{{ data.form_margin_2 }}</td>
+                                <td>{{ data.form_mtg_date_2 }}</td>
+                                <td>{{ data.form_other_runners_2 }}</td>
+                                <td>{{ data.form_pos_2 }}</td>
+                                <td>{{ data.form_price_2 }}</td>
+                                <td>{{ data.form_track_2 }}</td>
+                                <td>{{ data.form_tr_cond_2 }}</td>
+                                <td>{{ data.form_weight_2 }}</td>
+                                <td>{{ data.form_time_2 }}</td>
+                                <td>{{ data.sec_time_2 }}</td>
+                                <td>{{ data.dlr_2 }}</td>
+                                <td>{{ data.form_barrier_3 }}</td>
+                                <td>{{ data.form_class_3 }}</td>
+                                <td>{{ data.form_distance_3 }}</td>
+                                <td>{{ data.form_jockey_3 }}</td>
+                                <td>{{ data.form_margin_3 }}</td>
+                                <td>{{ data.form_mtg_date_3 }}</td>
+                                <td>{{ data.form_other_runners_3 }}</td>
+                                <td>{{ data.form_pos_3 }}</td>
+                                <td>{{ data.form_price_3 }}</td>
+                                <td>{{ data.form_track_3 }}</td>
+                                <td>{{ data.form_tr_cond_3 }}</td>
+                                <td>{{ data.form_weight_3 }}</td>
+                                <td>{{ data.form_time_3 }}</td>
+                                <td>{{ data.sec_time_3 }}</td>
+                                <td>{{ data.dlr_3 }}</td>
+                                <td>{{ data.seconds }}</td>
+                                <td>{{ data.msecs }}</td>
+                                <td>{{ data.time1 }}</td>
+                                <td>{{ data.wght_chg }}</td>
+                                <td>{{ data.dist_chg }}</td>
+                                <td>{{ data.bar_chg }}</td>
+                                <td>{{ data.wght_over_limit }}</td>
+                                <td>{{ data.ave_spd }}</td>
+                                <td>{{ data.dbr_1_2 }}</td>
+                                <td>{{ data.dbr_2_3 }}</td>
+                                <td>{{ data.bf_rtd_price }}</td>
+                                <td>{{ data.mktrk }}</td>
+                                <td>{{ data.starters }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination">
+                    <span class="current">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.</span>
+
+                    {% if page_obj.has_previous %}
+                    <a href="?page=1" class="pagination-link">&laquo; First</a>
+                    <a href="?page={{ page_obj.previous_page_number }}" class="pagination-link">Previous</a>
+                    {% endif %}
+                
+                    {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" class="pagination-link">Next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}" class="pagination-link">Last &raquo;</a>
+                    {% endif %}
+                </div>
+                <script>
+                    var page = 1;
+                    function fetchNextInvoices() {
+                        var url = window.location.href + '?page=' + page;
+                        fetch(url)
+                            .then(response => response.text())
+                            .then(data => {
+                                var parser = new DOMParser();
+                                var htmlDoc = parser.parseFromString(data, 'text/html');
+                                var rows = htmlDoc.getElementById('billing-table-body').innerHTML;
+                                document.getElementById('billing-table-body').innerHTML += rows;
+                                page++;
+                            });
+                    }
+        
+                    window.addEventListener('scroll', function() {
+                        if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+                            fetchNextInvoices();
+                        }
+                    });
+                </script>
+                {% else %}
+                <h6 style="tex">Sorry. No Data Available.</h6>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <div id="loader-overlay">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function() {
+            // Initialize the datepicker
+            $("#search_date").datepicker({
+                onSelect: function(dateText, inst) {
+                    // Get the selected date
+                    var selectedDate = $(this).datepicker('getDate');
+                    
+                    // Convert the date to the desired format
+                    var formattedDate = $.datepicker.formatDate('dd-M-yy', selectedDate);
+                    
+                    // Perform further actions, such as filtering data or submitting a form
+                    console.log("Selected date:", formattedDate);
+                }
+            });
+        });
+    </script>
+  </body>
+</html>
+
+<table>
+    <thead>
+        
+    </thead>
+    <tbody>
+        {% for data_entry in all_meetings_data %}
+            <tr>
+                <td>{{ data_entry.file_date }}</td>
+                <td>{{ data_entry.race_number }}</td>
+                <td>{{ data_entry.tab_number }}</td>
+                <td>{{ data_entry.horse }}</td>
+                <td>{{ data_entry.weight }}</td>
+                <td>{{ data_entry.claim }}</td>
+                <td>{{ data_entry.jockey }}</td>
+                <td>{{ data_entry.trainer }}</td>
+                <!-- Add other fields as needed -->
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

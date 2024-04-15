@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <title>Home Page</title>
+
+    <style>
+        *{
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+
+        h1, h2, h3, h4, h5, h6, p{
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar{
+            background: #F1FAFF !important;
+        }
+
+        .navbar-brand{
+            color: #000;
+            font-size: 1.5rem;
+        }
+
+        .nav-item .nav-link{
+            font-size: 1rem;
+            color: #000 !important;
+        }
+
+        .nav-item .nav-link.active{
+            font-weight: 600;
+        }
+
+        #loader-overlay{
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            display: none;
+            z-index: 1000;
+        }
+
+        .loader{
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 2s linear infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes spin {
+            0% {transform: rotate(0deg);}
+            100% {transform: rotate(360deg);}
+        }
+
+        .hidden{
+            display: none;
+        }
+
+        .import_form{
+            width: 500px;
+            margin: 50px auto;
+            padding: 30px;
+            background: #fafafa;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .import_form h1{
+            font-size: 1.8rem;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .import_form form label, .import_form form input{
+            font-size: 1rem;
+        }
+
+        .import_form form .submit_button{
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .import_form form .submit_button .btn{
+            background: #0EA432;
+            color: #fff;
+            transition: 0.4s all;
+        }
+
+        .import_form form .submit_button .btn:hover{
+            background: #0e842a;
+            color: #fff;
+        }
+    </style>
+  </head>
+  <body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="{% url 'home' %}">HorseRacingApp</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item ms-md-3 mx-auto">
+                            <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
+                        </li>
+                        <li class="nav-item ms-md-3 mx-auto">
+                            <a class="nav-link" href="{% url 'allMeetingsData_view' %}">All Meetings Data View</a>
+                        </li>
+                        <li class="nav-item ms-md-3 mx-auto">
+                            <a class="nav-link" href="#">Form All Meetings Data View</a>
+                        </li>
+                        <li class="nav-item ms-md-3 mx-auto">
+                            <a class="nav-link" href="#">Meeting Ratings Data View</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    {% if success_msg %}
+        <h6 class="text-center alert alert-primary my-2 fs-4" id="success_message" style="position: absolute; width: 100%;">{{success_msg}}</h6>
+        <script>
+            function hideErrorMessage(){
+                var error_message = document.getElementById("success_message");
+                error_message.style.display = "none";
+            }
+            setTimeout(hideErrorMessage, 2500);
+        </script>
+    {% endif %} 
+
+    {% if error_msg %}
+        <h6 class="text-center alert alert-danger my-2 fs-4" id="error_message" style="position: absolute; width: 100%;">{{error_msg}}</h6>
+        <script>
+            function hideErrorMessage(){
+                var error_message = document.getElementById("error_message");
+                error_message.style.display = "none";
+            }
+            setTimeout(hideErrorMessage, 2500);
+        </script>
+    {% endif %} 
+
+    <section class="home_main">
+        <div class="container-fluid">
+            <div class="import_form">
+                <h1>Import your excel files here</h1>
+                <form id="import_form" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label for="all_meetings_file" class="form-label">All Meetings File</label>
+                        <input type="file" class="form-control" id="all_meetings_file" name="all_meetings_file">
+                    </div>
+                    <div class="mb-4">
+                        <label for="form_all_meetings_file" class="form-label">Form-All Meetings File</label>
+                        <input type="file" class="form-control" id="form_all_meetings_file" name="form_all_meetings_file">
+                    </div>
+                    <div class="mb-4">
+                        <label for="meeting_ratings_file" class="form-label">Meeting Ratings File</label>
+                        <input type="file" class="form-control" id="meeting_ratings_file" name="meeting_ratings_file">
+                    </div>
+                    <div class="submit_button">
+                        <button type="submit" class="btn" id="submitBtn">Upload Files</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <div id="loader-overlay">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script>
+        document.getElementById("submitBtn").addEventListener("click", function(){
+            document.getElementById('loader-overlay').style.display = 'block';
+        });
+    </script>
+  </body>
+</html>
