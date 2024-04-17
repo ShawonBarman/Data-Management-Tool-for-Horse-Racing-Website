@@ -433,6 +433,9 @@ def home_page_view(request):
             all_meetings_file = None
             form_all_meetings_file = None
             meeting_ratings_file = None
+            message = ''
+            all_meetings_file_flag = False
+            form_all_meetings_file_flag = False
             try:
                 all_meetings_file = request.FILES['all_meetings_file']
             except KeyError:
@@ -453,7 +456,8 @@ def home_page_view(request):
                     return render(request, "home_page.html", {"error_msg": "Date format is missing in your file name."})
                 success, error = import_data_for_all_meetings_file(all_meetings_file, all_meetings_file_date)
                 if success:
-                    pass
+                    message = "All Meetings File has been imported sucessfully."
+                    all_meetings_file_flag = True
                 else:
                     return render(request, "home_page.html", {"error_msg": error})
             if form_all_meetings_file:
@@ -463,7 +467,11 @@ def home_page_view(request):
                     return render(request, "home_page.html", {"error_msg": "Date format is missing in your file name."})
                 success, error = import_data_for_form_all_meetings_file(form_all_meetings_file, form_all_meetings_file_date)
                 if success:
-                    pass
+                    if message != '':
+                        message = "All Meetings File and Form-All Meetings File have been imported sucessfully."
+                    else:
+                        message = "Form-All Meetings File has been imported sucessfully."
+                    form_all_meetings_file_flag = True
                 else:
                     return render(request, "home_page.html", {"error_msg": error})
             if meeting_ratings_file:
@@ -473,10 +481,17 @@ def home_page_view(request):
                     return render(request, "home_page.html", {"error_msg": "Date format is missing in your file name."})
                 success, error = import_data_for_meeting_ratings_file(meeting_ratings_file, meeting_ratings_file_date)
                 if success:
-                    pass
+                    if all_meetings_file_flag and form_all_meetings_file_flag:
+                        message = "All Meetings File, Form-All Meetings File and Meeting Ratings File have been imported sucessfully."
+                    elif all_meetings_file_flag and not(form_all_meetings_file_flag):
+                        message = "All Meetings File and Meeting Ratings File have been imported sucessfully."
+                    elif not(all_meetings_file_flag) and form_all_meetings_file_flag:
+                        message = "Form-All Meetings File and Meeting Ratings File have been imported sucessfully."
+                    else:
+                        message = "Meeting Ratings File has been imported sucessfully."
                 else:
                     return render(request, "home_page.html", {"error_msg": error})
-            return render(request, "home_page.html", {"success_msg": "Data imported successfully."})
+            return render(request, "home_page.html", {"success_msg": message})
         return render(request, "home_page.html")
     except Exception as e:
         print(e)

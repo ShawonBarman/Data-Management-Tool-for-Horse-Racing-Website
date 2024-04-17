@@ -190,6 +190,20 @@
         .current {
             font-weight: bold;
         }
+
+        @media (max-width: 767px){
+            .searching_part{
+                width: 500px;
+                padding: 15px 40px;
+            }
+        }
+
+        @media (max-width: 600px){
+            .searching_part{
+                width: 300px;
+                padding: 15px 20px;
+            }
+        }
     </style>
   </head>
   <body>
@@ -353,7 +367,7 @@
                         <tbody>
                             {% for data in page_obj %}
                             <tr>
-                                <td>{{ data.file_date }}</td>
+                                <td>{{ data.file_date|date:"m/d/y" }}</td>
                                 <td>{{ data.meeting }}</td>
                                 <td>{{ data.track_condition }}</td>
                                 <td>{{ data.time }}</td>
