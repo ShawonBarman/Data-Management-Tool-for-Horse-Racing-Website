@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <title>Meetings Rating View Page</title>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+    <style>
+        *{
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+
+        h1, h2, h3, h4, h5, h6, p{
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar{
+            background: #F1FAFF !important;
+        }
+
+        .navbar-brand{
+            color: #000;
+            font-size: 1.5rem;
+        }
+
+        .nav-item .nav-link{
+            font-size: 1rem;
+            color: #000 !important;
+        }
+
+        .nav-item .nav-link.active{
+            font-weight: 600;
+        }
+
+        .searching_part{
+            background: #e5e3e3;
+            width: 600px;
+            margin: 20px auto;
+            padding: 20px 80px;
+            border-radius: 10px;
+        }
+
+        .searching_part input{
+            border-radius: 5px;
+            border: none;
+            outline: none;
+            width: 100%;
+            height: 35px;
+        }
+
+        .searching_part form button{
+            border-radius: 5px;
+            border: none;
+            width: 100%;
+            height: 35px;
+            background: #0EA432;
+            color: #fff;
+            transition: 0.4s all;
+            cursor: pointer;
+        }
+
+        .searching_part form button:hover{
+            background: #0e842a;
+            color: #fff;
+        }
+
+        .data_section h6{
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .data_section table thead{
+            background: #fafafa;
+            color: #000;
+        }
+
+        .data_section table tr th{
+            font-size: 0.9rem;
+            border: none;
+            white-space: nowrap;
+        }
+
+        .data_section table tr td{
+            font-size: 0.9rem;
+            margin: auto 0;
+            border: none;
+        }
+
+        .data_section table tr td .btn{
+            font-size: 0.9rem;
+        }
+
+        .data_section table tfoot tr td{
+            padding-top: 15px;
+            padding-bottom: 15px;
+            border: none;
+        }
+
+        .data_section .lightGreenBtn{
+            background: #0EA432;
+            color: #fff;
+            transition: 0.4s all;
+        }
+
+        .data_section .lightGreenBtn:hover{
+            background: #0e842a;
+            color: #fff;
+        }
+
+        .table>:not(caption)>*>* {
+            padding: 0.5rem 0.8rem;
+        }
+
+        tbody, td, th, thead, tr {
+            border-color: inherit;
+            border-style: groove;
+            border-width: 1px;
+        }
+
+        #loader-overlay{
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            display: none;
+            z-index: 1000;
+        }
+
+        .loader{
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 2s linear infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes spin {
+            0% {transform: rotate(0deg);}
+            100% {transform: rotate(360deg);}
+        }
+
+        .hidden{
+            display: none;
+        }
+
+        .pagination {
+            margin: 20px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .pagination-link {
+            color: #007bff;
+            text-decoration: none;
+            padding: 2px 10px;
+            border: 1px solid #007bff;
+            border-radius: 3px;
+            margin-left: 15px;
+            transition: 0.3s all;
+        }
+        
+        .pagination-link:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+        
+        .current {
+            font-weight: bold;
+        }
+    </style>
+  </head>
+  <body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="{% url 'home' %}">HorseRacingApp</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item ms-md-3 mx-auto">
+                            <a class="nav-link" href="{% url 'home' %}">Home</a>
+                        </li>
+                        <li class="nav-item ms-md-3 mx-auto">
+                            <a class="nav-link" href="{% url 'allMeetingsData_view' %}">All Meetings Data View</a>
+                        </li>
+                        <li class="nav-item ms-md-3 mx-auto">
+                            <a class="nav-link" aria-current="page" href="{% url 'fromAllMeetingsData_view' %}">Form All Meetings Data View</a>
+                        </li>
+                        <li class="nav-item ms-md-3 mx-auto">
+                            <a class="nav-link active" aria-current="page" href="{% url 'meetingsRatingData_view' %}">Meeting Ratings Data View</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    {% if success_msg %}
+        <h6 class="text-center alert alert-primary my-2 fs-4" id="success_message" style="position: absolute; width: 100%;">{{success_msg}}</h6>
+        <script>
+            function hideErrorMessage(){
+                var error_message = document.getElementById("success_message");
+                error_message.style.display = "none";
+            }
+            setTimeout(hideErrorMessage, 2000);
+        </script>
+    {% endif %} 
+    {% if error_msg %}
+        <h6 class="text-center alert alert-danger my-2 fs-4" id="error_message" style="position: absolute; width: 100%;">{{error_msg}}</h6>
+        <script>
+            function hideErrorMessage(){
+                var error_message = document.getElementById("error_message");
+                error_message.style.display = "none";
+            }
+            setTimeout(hideErrorMessage, 2000);
+        </script>
+    {% endif %} 
+
+    <section class="home_main">
+        <div class="container-fluid">
+            <div class="searching_part">
+                <form method="post" action="">
+                    {% csrf_token %}
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-8">
+                            {% if current_date %}
+                            <input type="text" class="form-control" id="search_date" name="search_date" value="{{current_date}}">
+                            {% else %}
+                                <input type="text" class="form-control" id="search_date" name="search_date" placeholder="Select date">
+                            {% endif %}
+                        </div>
+                        <div class="col-4">
+                            <button type="submit" class="btn" name="searchButton">Search</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <section class="data_section">
+        <div class="container-fluid">
+            <div class="showing_data_part">
+                {% if page_obj %}
+                <div class="table-responsive">
+                    <table class="table table-hover" width="100%;">
+                        <thead>
+                            <tr>
+                                <th>File Date</th>
+                                <th>Meeting</th>
+                                <th>Track Condition</th>
+                                <th>Time</th>
+                                <th>Race Number</th>
+                                <th>Race Class</th>
+                                <th>Class Change</th>
+                                <th>Distance</th>
+                                <th>Distance Change</th>
+                                <th>Form Last 10</th>
+                                <th>Tab No</th>
+                                <th>Horse</th>
+                                <th>Barrier</th>
+                                <th>Barrier Change</th>
+                                <th>Prediction</th>
+                                <th>Rating</th>
+                                <th>Jky</th>
+                                <th>Trn</th>
+                                <th>Rank_Class</th>
+                                <th>Rank_LSFPos</th>
+                                <th>Rank_LSFPos-2</th>
+                                <th>Rank_DistChg</th>
+                                <th>Rank_DLR</th>
+                                <th>Rank_MktRk</th>
+                                <th>Rank_RFS</th>
+                                <th>Rank_PFScore</th>
+                                <th>Rank_StlgPos</th>
+                                <th>Rank_Barrier</th>
+                                <th>Rank_Weight</th>
+                                <th>Jockey</th>
+                                <th>Jky_A2E</th>
+                                <th>Weight</th>
+                                <th>WghtChg</th>
+                                <th>priceSP</th>
+                                <th>HistRunStyle</th>
+                                <th>PredStlgPos</th>
+                                <th>Trainer</th>
+                                <th>Trn_A2E</th>
+                                <th>MktRk</th>
+                                <th>DLR-1</th>
+                                <th>FormMargin-1</th>
+                                <th>FormDist-1</th>
+                                <th>RunnerTime</th>
+                                <th>Last600m</th>
+                                <th>AveSpd(Mts/Sec)</th>
+                                <th>FormJky-1</th>
+                                <th>FormWeight-1</th>
+                                <th>FormBarrier-1</th>
+                                <th>FormTr-Cond-1</th>
+                                <th>FormCl-1</th>
+                                <th>FormOtherRunners-1</th>
+                                <th>FormMargin-2</th>
+                                <th>FormDist-2</th>
+                                <th>FormTime-2</th>
+                                <th>SecTime-2</th>
+                                <th>FormJky-2</th>
+                                <th>FormWeight-2</th>
+                                <th>FormBarrier-2</th>
+                                <th>FormTrCond-2</th>
+                                <th>FormClass-2</th>
+                                <th>FormOtherRunners-2</th>
+                                <th>Starts</th>
+                                <th>W-SR</th>
+                                <th>Dist-St</th>
+                                <th>DistSR</th>
+                                <th>Tr-St</th>
+                                <th>Tr-SR</th>
+                                <th>G-St</th>
+                                <th>G-W</th>
+                                <th>G-SR</th>
+                                <th>S-St</th>
+                                <th>S-W</th>
+                                <th>S-SR</th>
+                                <th>H-St</th>
+                                <th>H-W</th>
+                                <th>H-SR</th>
+                                <th>Starters</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in page_obj %}
+                            <tr>
+                                <td>{{ data.file_date }}</td>
+                                <td>{{ data.meeting }}</td>
+                                <td>{{ data.track_condition }}</td>
+                                <td>{{ data.time }}</td>
+                                <td>{{ data.race_number }}</td>
+                                <td>{{ data.race_class }}</td>
+                                <td>{{ data.class_change }}</td>
+                                <td>{{ data.distance }}</td>
+                                <td>{{ data.distance_change }}</td>
+                                <td>{{ data.form_last_10 }}</td>
+                                <td>{{ data.tab_no }}</td>
+                                <td>{{ data.horse }}</td>
+                                <td>{{ data.barrier }}</td>
+                                <td>{{ data.barrier_change }}</td>
+                                <td>{{ data.prediction }}</td>
+                                <td>{{ data.rating }}</td>
+                                <td>{{ data.jky }}</td>
+                                <td>{{ data.trn }}</td>
+                                <td>{{ data.rank_class }}</td>
+                                <td>{{ data.rank_lsf_pos }}</td>
+                                <td>{{ data.rank_lsf_pos_2 }}</td>
+                                <td>{{ data.rank_dist_chg }}</td>
+                                <td>{{ data.rank_dlr }}</td>
+                                <td>{{ data.rank_mkt_rk }}</td>
+                                <td>{{ data.rank_rfs }}</td>
+                                <td>{{ data.rank_pfscore }}</td>
+                                <td>{{ data.rank_stlg_pos }}</td>
+                                <td>{{ data.rank_barrier }}</td>
+                                <td>{{ data.rank_weight }}</td>
+                                <td>{{ data.jockey }}</td>
+                                <td>{{ data.jockey_a2e }}</td>
+                                <td>{{ data.weight }}</td>
+                                <td>{{ data.weight_change }}</td>
+                                <td>{{ data.price_sp }}</td>
+                                <td>{{ data.hist_run_style }}</td>
+                                <td>{{ data.pred_stlg_pos }}</td>
+                                <td>{{ data.trainer }}</td>
+                                <td>{{ data.trainer_a2e }}</td>
+                                <td>{{ data.mkt_rk }}</td>
+                                <td>{{ data.dlr_1 }}</td>
+                                <td>{{ data.form_margin_1 }}</td>
+                                <td>{{ data.form_dist_1 }}</td>
+                                <td>{{ data.runner_time }}</td>
+                                <td>{{ data.last_600m }}</td>
+                                <td>{{ data.ave_spd_mts_sec }}</td>
+                                <td>{{ data.form_jky_1 }}</td>
+                                <td>{{ data.form_weight_1 }}</td>
+                                <td>{{ data.form_barrier_1 }}</td>
+                                <td>{{ data.form_tr_cond_1 }}</td>
+                                <td>{{ data.form_cl_1 }}</td>
+                                <td>{{ data.form_other_runners_1 }}</td>
+                                <td>{{ data.form_margin_2 }}</td>
+                                <td>{{ data.form_dist_2 }}</td>
+                                <td>{{ data.form_time_2 }}</td>
+                                <td>{{ data.sec_time_2 }}</td>
+                                <td>{{ data.form_jky_2 }}</td>
+                                <td>{{ data.form_weight_2 }}</td>
+                                <td>{{ data.form_barrier_2 }}</td>
+                                <td>{{ data.form_tr_cond_2 }}</td>
+                                <td>{{ data.form_class_2 }}</td>
+                                <td>{{ data.form_other_runners_2 }}</td>
+                                <td>{{ data.starts }}</td>
+                                <td>{{ data.w_sr }}</td>
+                                <td>{{ data.dist_st }}</td>
+                                <td>{{ data.dist_sr }}</td>
+                                <td>{{ data.tr_st }}</td>
+                                <td>{{ data.tr_sr }}</td>
+                                <td>{{ data.g_st }}</td>
+                                <td>{{ data.g_w }}</td>
+                                <td>{{ data.g_sr }}</td>
+                                <td>{{ data.s_st }}</td>
+                                <td>{{ data.s_w }}</td>
+                                <td>{{ data.s_sr }}</td>
+                                <td>{{ data.h_st }}</td>
+                                <td>{{ data.h_w }}</td>
+                                <td>{{ data.h_sr }}</td>
+                                <td>{{ data.starters }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination">
+                    <span class="current">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.</span>
+
+                    {% if page_obj.has_previous %}
+                    <a href="?page=1" class="pagination-link">&laquo; First</a>
+                    <a href="?page={{ page_obj.previous_page_number }}" class="pagination-link">Previous</a>
+                    {% endif %}
+                
+                    {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" class="pagination-link">Next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}" class="pagination-link">Last &raquo;</a>
+                    {% endif %}
+                </div>
+                <script>
+                    var page = 1;
+                    function fetchNextInvoices() {
+                        var url = window.location.href + '?page=' + page;
+                        fetch(url)
+                            .then(response => response.text())
+                            .then(data => {
+                                var parser = new DOMParser();
+                                var htmlDoc = parser.parseFromString(data, 'text/html');
+                                var rows = htmlDoc.getElementById('billing-table-body').innerHTML;
+                                document.getElementById('billing-table-body').innerHTML += rows;
+                                page++;
+                            });
+                    }
+        
+                    window.addEventListener('scroll', function() {
+                        if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+                            fetchNextInvoices();
+                        }
+                    });
+                </script>
+                {% else %}
+                <h6 style="tex">Sorry. No Data Available.</h6>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <div id="loader-overlay">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function() {
+            // Initialize the datepicker
+            $("#search_date").datepicker({
+                onSelect: function(dateText, inst) {
+                    // Get the selected date
+                    var selectedDate = $(this).datepicker('getDate');
+                    
+                    // Convert the date to the desired format
+                    var formattedDate = $.datepicker.formatDate('dd-M-yy', selectedDate);
+                    
+                    // Perform further actions, such as filtering data or submitting a form
+                    console.log("Selected date:", formattedDate);
+                }
+            });
+        });
+    </script>
+  </body>
+</html>

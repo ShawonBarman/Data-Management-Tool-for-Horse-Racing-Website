@@ -209,10 +209,10 @@
                             <a class="nav-link active" aria-current="page" href="{% url 'allMeetingsData_view' %}">All Meetings Data View</a>
                         </li>
                         <li class="nav-item ms-md-3 mx-auto">
-                            <a class="nav-link" href="#">Form All Meetings Data View</a>
+                            <a class="nav-link" href="{% url 'fromAllMeetingsData_view' %}">Form All Meetings Data View</a>
                         </li>
                         <li class="nav-item ms-md-3 mx-auto">
-                            <a class="nav-link" href="#">Meeting Ratings Data View</a>
+                            <a class="nav-link" href="{% url 'meetingsRatingData_view' %}">Meeting Ratings Data View</a>
                         </li>
                     </ul>
                 </div>
@@ -655,24 +655,3 @@
     </script>
   </body>
 </html>
-
-<table>
-    <thead>
-        
-    </thead>
-    <tbody>
-        {% for data_entry in all_meetings_data %}
-            <tr>
-                <td>{{ data_entry.file_date }}</td>
-                <td>{{ data_entry.race_number }}</td>
-                <td>{{ data_entry.tab_number }}</td>
-                <td>{{ data_entry.horse }}</td>
-                <td>{{ data_entry.weight }}</td>
-                <td>{{ data_entry.claim }}</td>
-                <td>{{ data_entry.jockey }}</td>
-                <td>{{ data_entry.trainer }}</td>
-                <!-- Add other fields as needed -->
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
