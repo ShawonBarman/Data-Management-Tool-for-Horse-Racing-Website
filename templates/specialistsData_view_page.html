@@ -1,0 +1,1287 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <title>Specialists View Page</title>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+    <style>
+        *{
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+
+        h1, h2, h3, h4, h5, h6, p{
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar{
+            background: #F1FAFF !important;
+        }
+
+        .navbar-brand{
+            color: #000;
+            font-size: 1.5rem;
+        }
+
+        .nav-item .nav-link{
+            font-size: 1rem;
+            color: #000 !important;
+        }
+
+        .nav-item .nav-link.active{
+            font-weight: 600;
+        }
+
+        .searching_part{
+            background: #c2d69b;
+            width: 650px;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .searching_part input, .searching_part select{
+            border-radius: 5px;
+            border: none;
+            outline: none;
+            width: 100%;
+            height: 35px;
+            font-size: 0.9rem;
+            border: 1px solid #b8cce4;
+        }
+
+        .searching_part form button{
+            border-radius: 5px;
+            border: none;
+            width: 100%;
+            height: 35px;
+            background: #0EA432;
+            color: #fff;
+            transition: 0.4s all;
+            cursor: pointer;
+            font-size: 0.9rem;
+            border: 1px solid #b8cce4;
+        }
+
+        .searching_part form button:hover{
+            background: #0e842a;
+            color: #fff;
+        }
+
+        .data_section h6{
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .data_section table thead{
+            background: #fafafa;
+            color: #000;
+        }
+
+        .data_section table tr th{
+            font-size: 0.9rem;
+            border: none;
+            white-space: nowrap;
+        }
+
+        .data_section table tr td{
+            font-size: 0.9rem;
+            margin: auto 0;
+            border: none;
+        }
+
+        .data_section table tr td .btn{
+            font-size: 0.9rem;
+        }
+
+        .data_section table tfoot tr td{
+            padding-top: 15px;
+            padding-bottom: 15px;
+            border: none;
+        }
+
+        .data_section .lightGreenBtn{
+            background: #0EA432;
+            color: #fff;
+            transition: 0.4s all;
+        }
+
+        .data_section .lightGreenBtn:hover{
+            background: #0e842a;
+            color: #fff;
+        }
+
+        .table>:not(caption)>*>* {
+            padding: 0.5rem 0.8rem;
+        }
+
+        tbody, td, th, thead, tr {
+            border-color: inherit;
+            border-style: groove;
+            border-width: 1px;
+        }
+
+        #loader-overlay{
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            display: none;
+            z-index: 1000;
+        }
+
+        .loader{
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 2s linear infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes spin {
+            0% {transform: rotate(0deg);}
+            100% {transform: rotate(360deg);}
+        }
+
+        .hidden{
+            display: none;
+        }
+
+        .pagination {
+            margin: 20px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .pagination-link {
+            color: #007bff;
+            text-decoration: none;
+            padding: 2px 10px;
+            border: 1px solid #007bff;
+            border-radius: 3px;
+            margin-left: 15px;
+            transition: 0.3s all;
+        }
+        
+        .pagination-link:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+        
+        .current {
+            font-weight: bold;
+        }
+
+        @media (max-width: 767px){
+            .searching_part{
+                width: 500px;
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 600px){
+            .searching_part{
+                width: 300px;
+                padding: 10px;
+            }
+        }
+    </style>
+  </head>
+  <body>
+    <header>
+        <nav class="navbar navbar-expand-xl navbar-light bg-light">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="{% url 'home' %}">HorseRacingApp</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item ms-md-3 mx-auto">
+                            <a class="nav-link" href="{% url 'home' %}">Home</a>
+                        </li>
+                        <li class="nav-item ms-md-3 mx-auto">
+                            <a class="nav-link" href="{% url 'allMeetingsData_view' %}">All Meetings Data View</a>
+                        </li>
+                        <li class="nav-item ms-md-3 mx-auto">
+                            <a class="nav-link" aria-current="page" href="{% url 'fromAllMeetingsData_view' %}">Form All Meetings Data View</a>
+                        </li>
+                        <li class="nav-item ms-md-3 mx-auto">
+                            <a class="nav-link" href="{% url 'meetingsRatingData_view' %}">Meeting Ratings Data View</a>
+                        </li>
+                        <li class="nav-item ms-md-3 mx-auto">
+                            <a class="nav-link active" aria-current="page" href="{% url 'specialistsData_view' %}">Specialists Data View</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    {% if success_msg %}
+        <h6 class="text-center alert alert-primary my-2 fs-4" id="success_message" style="position: absolute; width: 100%;">{{success_msg}}</h6>
+        <script>
+            function hideErrorMessage(){
+                var error_message = document.getElementById("success_message");
+                error_message.style.display = "none";
+            }
+            setTimeout(hideErrorMessage, 2000);
+        </script>
+    {% endif %} 
+    {% if error_msg %}
+        <h6 class="text-center alert alert-danger my-2 fs-4" id="error_message" style="position: absolute; width: 100%;">{{error_msg}}</h6>
+        <script>
+            function hideErrorMessage(){
+                var error_message = document.getElementById("error_message");
+                error_message.style.display = "none";
+            }
+            setTimeout(hideErrorMessage, 2000);
+        </script>
+    {% endif %} 
+
+    <section class="home_main">
+        <div class="container-fluid">
+            <div class="searching_part">
+                <form method="post" action="">
+                    {% csrf_token %}
+                    <div class="row d-flex justify-content-center g-2">
+                        <div class="col-md-3 col-6">
+                            {% if current_file_date %}
+                            <input type="text" class="form-control" id="search_date" name="search_date" value="{{current_file_date|date:'m/d/y'}}">
+                            {% else %}
+                                <input type="text" class="form-control" id="search_date" name="search_date" placeholder="Select date">
+                            {% endif %}
+                        </div>
+                        <div class="col-md-2 col-6">
+                            {% if current_race_no %}
+                            <input type="text" class="form-control" id="search_race_no" name="search_race_no" value="{{current_race_no}}">
+                            {% else %}
+                                <input type="text" class="form-control" id="search_race_no" name="search_race_no" placeholder="Race No">
+                            {% endif %}
+                        </div>
+                        <div class="col-md-2 col-6">
+                            {% if current_tab_no %}
+                            <input type="text" class="form-control" id="search_tab_no" name="search_tab_no" value="{{current_tab_no}}">
+                            {% else %}
+                                <input type="text" class="form-control" id="search_tab_no" name="search_tab_no" placeholder="Tab No">
+                            {% endif %}
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <select class="form-select" name="sheet_id" id="sheet_id">
+                                {% if current_sheet %}
+                                <option value="{{current_sheet.id}}">{{current_sheet.name}}</option>
+                                {% endif %}
+                                {% for sheet in all_sheet %}
+                                    {% if current_sheet.id == sheet.id %}
+                                    {% else %}
+                                    <option value="{{ sheet.id }}">{{ sheet.name }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2 col-6">
+                            <button type="submit" class="btn" name="searchButton">Search</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    {% if firstUp_data %}
+    <section class="data_section">
+        <div class="container-fluid">
+            <div class="showing_data_part">
+                <div class="table-responsive">
+                    <table class="table table-hover" width="100%;">
+                        <thead>
+                            <tr>
+                                <th>File Date</th>
+                                <th>Meeting</th>
+                                <th>Race No</th>
+                                <th>Time</th>
+                                <th>Distance</th>
+                                <th>Tab No</th>
+                                <th>Tr-Cond</th>
+                                <th>Form Last 10</th>
+                                <th>Horse</th>
+                                <th>Jockey</th>
+                                <th>Barrier</th>
+                                <th>Trainer</th>
+                                <th>DLR-1</th>
+                                <th>1st Up Starts</th>
+                                <th>1st Up Wins</th>
+                                <th>1st Up Placings</th>
+                                <th>1st Up SR</th>
+                                <th>Form Dist-1</th>
+                                <th>Form Pos-1</th>
+                                <th>Form Margin-1</th>
+                                <th>Class Change</th>
+                                <th>Hist Run Style</th>
+                                <th>BF_Rtd Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in firstUp_data %}
+                            <tr>
+                                <td>{{ data.file_date|date:"m/d/y" }}</td>
+                                <td>{{ data.meeting }}</td>
+                                <td>{{ data.race_no }}</td>
+                                <td>{{ data.time }}</td>
+                                <td>{{ data.distance }}</td>
+                                <td>{{ data.tab_no }}</td>
+                                <td>{{ data.tr_cond }}</td>
+                                <td>{{ data.form_last_10 }}</td>
+                                <td>{{ data.horse }}</td>
+                                <td>{{ data.jockey }}</td>
+                                <td>{{ data.barrier }}</td>
+                                <td>{{ data.trainer }}</td>
+                                <td>{{ data.dlr_1 }}</td>
+                                <td>{{ data.first_up_starts }}</td>
+                                <td>{{ data.first_up_wins }}</td>
+                                <td>{{ data.first_up_placings }}</td>
+                                <td>{{ data.first_up_sr }}</td>
+                                <td>{{ data.form_dist_1 }}</td>
+                                <td>{{ data.form_pos_1 }}</td>
+                                <td>{{ data.form_margin_1 }}</td>
+                                <td>{{ data.class_change }}</td>
+                                <td>{{ data.hist_run_style }}</td>
+                                <td>{% if data.bf_rtd_price == None %}{% else %}{{ data.bf_rtd_price }}{% endif %}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if secondUp_data %}
+    <section class="data_section">
+        <div class="container-fluid">
+            <div class="showing_data_part">
+                <div class="table-responsive">
+                    <table class="table table-hover" width="100%;">
+                        <thead>
+                            <tr>
+                                <th>File Date</th>
+                                <th>Meeting</th>
+                                <th>Race No</th>
+                                <th>Time</th>
+                                <th>Distance</th>
+                                <th>Tab No</th>
+                                <th>Tr-Cond</th>
+                                <th>Form Last 10</th>
+                                <th>Horse</th>
+                                <th>Jockey</th>
+                                <th>Barrier</th>
+                                <th>Trainer</th>
+                                <th>DLR-1</th>
+                                <th>2nd Up Starts</th>
+                                <th>2nd Up Wins</th>
+                                <th>2nd Up Placings</th>
+                                <th>2nd Up SR</th>
+                                <th>Form Dist-1</th>
+                                <th>Form Pos-1</th>
+                                <th>Form Margin-1</th>
+                                <th>Class Change</th>
+                                <th>Hist Run Style</th>
+                                <th>BF_Rtd Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in secondUp_data %}
+                            <tr>
+                                <td>{{ data.file_date|date:"m/d/y" }}</td>
+                                <td>{{ data.meeting }}</td>
+                                <td>{{ data.race_no }}</td>
+                                <td>{{ data.time }}</td>
+                                <td>{{ data.distance }}</td>
+                                <td>{{ data.tab_no }}</td>
+                                <td>{{ data.tr_cond }}</td>
+                                <td>{{ data.form_last_10 }}</td>
+                                <td>{{ data.horse }}</td>
+                                <td>{{ data.jockey }}</td>
+                                <td>{{ data.barrier }}</td>
+                                <td>{{ data.trainer }}</td>
+                                <td>{{ data.dlr_1 }}</td>
+                                <td>{{ data.second_up_starts }}</td>
+                                <td>{{ data.second_up_wins }}</td>
+                                <td>{{ data.second_up_placings }}</td>
+                                <td>{{ data.second_up_sr }}</td>
+                                <td>{{ data.form_dist_1 }}</td>
+                                <td>{{ data.form_pos_1 }}</td>
+                                <td>{{ data.form_margin_1 }}</td>
+                                <td>{{ data.class_change }}</td>
+                                <td>{{ data.hist_run_style }}</td>
+                                <td>{% if data.bf_rtd_price == None %}{% else %}{{ data.bf_rtd_price }}{% endif %}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if classDrop_data %}
+    <section class="data_section">
+        <div class="container-fluid">
+            <div class="showing_data_part">
+                <div class="table-responsive">
+                    <table class="table table-hover" width="100%;">
+                        <thead>
+                            <tr>
+                                <th>File Date</th>
+                                <th>Meeting</th>
+                                <th>Race No</th>
+                                <th>Time</th>
+                                <th>Distance</th>
+                                <th>Tab No</th>
+                                <th>Tr-Cond</th>
+                                <th>Form Last 10</th>
+                                <th>Horse</th>
+                                <th>Jockey</th>
+                                <th>Barrier</th>
+                                <th>Trainer</th>
+                                <th>DLR-1</th>
+                                <th>Class Change</th>
+                                <th>Form Dist-1</th>
+                                <th>Form Pos-1</th>
+                                <th>Form Margin-1</th>
+                                <th>Hist Run Style</th>
+                                <th>BF_Rtd Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in classDrop_data %}
+                            <tr>
+                                <td>{{ data.file_date|date:"m/d/y" }}</td>
+                                <td>{{ data.meeting }}</td>
+                                <td>{{ data.race_no }}</td>
+                                <td>{{ data.time }}</td>
+                                <td>{{ data.distance }}</td>
+                                <td>{{ data.tab_no }}</td>
+                                <td>{{ data.tr_cond }}</td>
+                                <td>{{ data.form_last_10 }}</td>
+                                <td>{{ data.horse }}</td>
+                                <td>{{ data.jockey }}</td>
+                                <td>{{ data.barrier }}</td>
+                                <td>{{ data.trainer }}</td>
+                                <td>{{ data.dlr_1 }}</td>
+                                <td>{{ data.class_change }}</td>
+                                <td>{{ data.form_dist_1 }}</td>
+                                <td>{{ data.form_pos_1 }}</td>
+                                <td>{{ data.form_margin_1 }}</td>
+                                <td>{{ data.hist_run_style }}</td>
+                                <td>{% if data.bf_rtd_price == None %}{% else %}{{ data.bf_rtd_price }}{% endif %}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if roughie_data %}
+    <section class="data_section">
+        <div class="container-fluid">
+            <div class="showing_data_part">
+                <div class="table-responsive">
+                    <table class="table table-hover" width="100%;">
+                        <thead>
+                            <tr>
+                                <th>File Date</th>
+                                <th>Meeting</th>
+                                <th>Race No</th>
+                                <th>Time</th>
+                                <th>Distance</th>
+                                <th>Tab No</th>
+                                <th>Tr-Cond</th>
+                                <th>Form Last 10</th>
+                                <th>Horse</th>
+                                <th>Jockey</th>
+                                <th>Barrier</th>
+                                <th>Trainer</th>
+                                <th>DLR-1</th>
+                                <th>Dist-St</th>
+                                <th>Dist SR</th>
+                                <th>Form Dist-1</th>
+                                <th>Form Margin-1</th>
+                                <th>Class Change</th>
+                                <th>W-SR</th>
+                                <th>Hist Run Style</th>
+                                <th>PriceSP</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in roughie_data %}
+                            <tr>
+                                <td>{{ data.file_date|date:"m/d/y" }}</td>
+                                <td>{{ data.meeting }}</td>
+                                <td>{{ data.race_no }}</td>
+                                <td>{{ data.time }}</td>
+                                <td>{{ data.distance }}</td>
+                                <td>{{ data.tab_no }}</td>
+                                <td>{{ data.tr_cond }}</td>
+                                <td>{{ data.form_last_10 }}</td>
+                                <td>{{ data.horse }}</td>
+                                <td>{{ data.jockey }}</td>
+                                <td>{{ data.barrier }}</td>
+                                <td>{{ data.trainer }}</td>
+                                <td>{{ data.dlr_1 }}</td>
+                                <td>{{ data.dist_st }}</td>
+                                <td>{{ data.dist_sr }}</td>
+                                <td>{{ data.form_dist_1 }}</td>
+                                <td>{{ data.form_margin_1 }}</td>
+                                <td>{{ data.class_change }}</td>
+                                <td>{{ data.w_sr }}</td>
+                                <td>{{ data.hist_run_style }}</td>
+                                <td>{% if data.price_sp == None %}{% else %}{{ data.price_sp }}{% endif %}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if crsSpecialist_data %}
+    <section class="data_section">
+        <div class="container-fluid">
+            <div class="showing_data_part">
+                <div class="table-responsive">
+                    <table class="table table-hover" width="100%;">
+                        <thead>
+                            <tr>
+                                <th>File Date</th>
+                                <th>Meeting</th>
+                                <th>Race No</th>
+                                <th>Time</th>
+                                <th>Distance</th>
+                                <th>Tab No</th>
+                                <th>Tr-Cond</th>
+                                <th>Form Last 10</th>
+                                <th>Horse</th>
+                                <th>Jockey</th>
+                                <th>Barrier</th>
+                                <th>Trainer</th>
+                                <th>DLR-1</th>
+                                <th>Track Starts</th>
+                                <th>Track Wins</th>
+                                <th>Track SR</th>
+                                <th>Form Dist-1</th>
+                                <th>Form Pos-1</th>
+                                <th>Form Margin-1</th>
+                                <th>Class Change</th>
+                                <th>Hist Run Style</th>
+                                <th>BF_Rtd Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in crsSpecialist_data %}
+                            <tr>
+                                <td>{{ data.file_date|date:"m/d/y" }}</td>
+                                <td>{{ data.meeting }}</td>
+                                <td>{{ data.race_no }}</td>
+                                <td>{{ data.time }}</td>
+                                <td>{{ data.distance }}</td>
+                                <td>{{ data.tab_no }}</td>
+                                <td>{{ data.tr_cond }}</td>
+                                <td>{{ data.form_last_10 }}</td>
+                                <td>{{ data.horse }}</td>
+                                <td>{{ data.jockey }}</td>
+                                <td>{{ data.barrier }}</td>
+                                <td>{{ data.trainer }}</td>
+                                <td>{{ data.dlr_1 }}</td>
+                                <td>{{ data.track_starts }}</td>
+                                <td>{{ data.track_wins }}</td>
+                                <td>{{ data.track_sr }}</td>
+                                <td>{{ data.form_dist_1 }}</td>
+                                <td>{{ data.form_pos_1 }}</td>
+                                <td>{{ data.form_margin_1 }}</td>
+                                <td>{{ data.class_change }}</td>
+                                <td>{{ data.hist_run_style }}</td>
+                                <td>{% if data.bf_rtd_price == None %}{% else %}{{ data.bf_rtd_price }}{% endif %}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if distSpecialist_data %}
+    <section class="data_section">
+        <div class="container-fluid">
+            <div class="showing_data_part">
+                <div class="table-responsive">
+                    <table class="table table-hover" width="100%;">
+                        <thead>
+                            <tr>
+                                <th>File Date</th>
+                                <th>Meeting</th>
+                                <th>Race No</th>
+                                <th>Time</th>
+                                <th>Distance</th>
+                                <th>Tab No</th>
+                                <th>Tr-Cond</th>
+                                <th>Form Last 10</th>
+                                <th>Horse</th>
+                                <th>Jockey</th>
+                                <th>Barrier</th>
+                                <th>Trainer</th>
+                                <th>DLR-1</th>
+                                <th>Dist Starts</th>
+                                <th>Dist Wins</th>
+                                <th>Dist SR</th>
+                                <th>Form Dist-1</th>
+                                <th>Form Pos-1</th>
+                                <th>Form Margin-1</th>
+                                <th>Class Change</th>
+                                <th>Hist Run Style</th>
+                                <th>BF_Rtd Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in distSpecialist_data %}
+                            <tr>
+                                <td>{{ data.file_date|date:"m/d/y" }}</td>
+                                <td>{{ data.meeting }}</td>
+                                <td>{{ data.race_no }}</td>
+                                <td>{{ data.time }}</td>
+                                <td>{{ data.distance }}</td>
+                                <td>{{ data.tab_no }}</td>
+                                <td>{{ data.tr_cond }}</td>
+                                <td>{{ data.form_last_10 }}</td>
+                                <td>{{ data.horse }}</td>
+                                <td>{{ data.jockey }}</td>
+                                <td>{{ data.barrier }}</td>
+                                <td>{{ data.trainer }}</td>
+                                <td>{{ data.dlr_1 }}</td>
+                                <td>{{ data.dist_starts }}</td>
+                                <td>{{ data.dist_wins }}</td>
+                                <td>{{ data.dist_sr }}</td>
+                                <td>{{ data.form_dist_1 }}</td>
+                                <td>{{ data.form_pos_1 }}</td>
+                                <td>{{ data.form_margin_1 }}</td>
+                                <td>{{ data.class_change }}</td>
+                                <td>{{ data.hist_run_style }}</td>
+                                <td>{% if data.bf_rtd_price == None %}{% else %}{{ data.bf_rtd_price }}{% endif %}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if trDistSpecialist_data %}
+    <section class="data_section">
+        <div class="container-fluid">
+            <div class="showing_data_part">
+                <div class="table-responsive">
+                    <table class="table table-hover" width="100%;">
+                        <thead>
+                            <tr>
+                                <th>File Date</th>
+                                <th>Meeting</th>
+                                <th>Race No</th>
+                                <th>Time</th>
+                                <th>Distance</th>
+                                <th>Tab No</th>
+                                <th>Tr-Cond</th>
+                                <th>Form Last 10</th>
+                                <th>Horse</th>
+                                <th>Jockey</th>
+                                <th>Barrier</th>
+                                <th>Trainer</th>
+                                <th>DLR-1</th>
+                                <th>Tr-Dist Starts</th>
+                                <th>Tr-Dist Wins</th>
+                                <th>Tr-Dist SR</th>
+                                <th>Track Starts</th>
+                                <th>Track Wins</th>
+                                <th>Track SR</th>
+                                <th>Form Dist-1</th>
+                                <th>Form Pos-1</th>
+                                <th>Form Margin-1</th>
+                                <th>Class Change</th>
+                                <th>Hist Run Style</th>
+                                <th>BF_Rtd Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in trDistSpecialist_data %}
+                            <tr>
+                                <td>{{ data.file_date|date:"m/d/y" }}</td>
+                                <td>{{ data.meeting }}</td>
+                                <td>{{ data.race_no }}</td>
+                                <td>{{ data.time }}</td>
+                                <td>{{ data.distance }}</td>
+                                <td>{{ data.tab_no }}</td>
+                                <td>{{ data.tr_cond }}</td>
+                                <td>{{ data.form_last_10 }}</td>
+                                <td>{{ data.horse }}</td>
+                                <td>{{ data.jockey }}</td>
+                                <td>{{ data.barrier }}</td>
+                                <td>{{ data.trainer }}</td>
+                                <td>{{ data.dlr_1 }}</td>
+                                <td>{{ data.tr_dist_starts }}</td>
+                                <td>{{ data.tr_dist_wins }}</td>
+                                <td>{{ data.tr_dist_sr }}</td>
+                                <td>{{ data.track_starts }}</td>
+                                <td>{{ data.track_wins }}</td>
+                                <td>{{ data.track_sr }}</td>
+                                <td>{{ data.form_dist_1 }}</td>
+                                <td>{{ data.form_pos_1 }}</td>
+                                <td>{{ data.form_margin_1 }}</td>
+                                <td>{{ data.class_change }}</td>
+                                <td>{{ data.hist_run_style }}</td>
+                                <td>{% if data.bf_rtd_price == None %}{% else %}{{ data.bf_rtd_price }}{% endif %}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if jkyTrn_data %}
+    <section class="data_section">
+        <div class="container-fluid">
+            <div class="showing_data_part">
+                <div class="table-responsive">
+                    <table class="table table-hover" width="100%;">
+                        <thead>
+                            <tr>
+                                <th>File Date</th>
+                                <th>Meeting</th>
+                                <th>Race No</th>
+                                <th>Time</th>
+                                <th>Distance</th>
+                                <th>Tab No</th>
+                                <th>Tr-Cond</th>
+                                <th>Form Last 10</th>
+                                <th>Horse</th>
+                                <th>Jockey</th>
+                                <th>Jky_A2E</th>
+                                <th>Barrier</th>
+                                <th>Trainer</th>
+                                <th>Trn_A2E</th>
+                                <th>DLR-1</th>
+                                <th>Form Dist-1</th>
+                                <th>Form Pos-1</th>
+                                <th>Form Margin-1</th>
+                                <th>Class Change</th>
+                                <th>Hist Run Style</th>
+                                <th>PriceSP</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in jkyTrn_data %}
+                            <tr>
+                                <td>{{ data.file_date|date:"m/d/y" }}</td>
+                                <td>{{ data.meeting }}</td>
+                                <td>{{ data.race_no }}</td>
+                                <td>{{ data.time }}</td>
+                                <td>{{ data.distance }}</td>
+                                <td>{{ data.tab_no }}</td>
+                                <td>{{ data.tr_cond }}</td>
+                                <td>{{ data.form_last_10 }}</td>
+                                <td>{{ data.horse }}</td>
+                                <td>{{ data.jockey }}</td>
+                                <td>{{ data.jky_a2e }}</td>
+                                <td>{{ data.barrier }}</td>
+                                <td>{{ data.trainer }}</td>
+                                <td>{{ data.trn_a2e }}</td>
+                                <td>{{ data.dlr_1 }}</td>
+                                <td>{{ data.form_dist_1 }}</td>
+                                <td>{{ data.form_pos_1 }}</td>
+                                <td>{{ data.form_margin_1 }}</td>
+                                <td>{{ data.class_change }}</td>
+                                <td>{{ data.hist_run_style }}</td>
+                                <td>{% if data.price_sp == None %}{% else %}{{ data.price_sp }}{% endif %}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if jockeys_data %}
+    <section class="data_section">
+        <div class="container-fluid">
+            <div class="showing_data_part">
+                <div class="table-responsive">
+                    <table class="table table-hover" width="100%;">
+                        <thead>
+                            <tr>
+                                <th>File Date</th>
+                                <th>Meeting</th>
+                                <th>Race No</th>
+                                <th>Time</th>
+                                <th>Distance</th>
+                                <th>Tab No</th>
+                                <th>Tr-Cond</th>
+                                <th>Form Last 10</th>
+                                <th>Horse</th>
+                                <th>Jockey</th>
+                                <th>Jky_A2E</th>
+                                <th>Barrier</th>
+                                <th>Trainer</th>
+                                <th>DLR-1</th>
+                                <th>Form Dist-1</th>
+                                <th>Form Pos-1</th>
+                                <th>Form Margin-1</th>
+                                <th>Class Change</th>
+                                <th>Hist Run Style</th>
+                                <th>PriceSP</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in jockeys_data %}
+                            <tr>
+                                <td>{{ data.file_date|date:"m/d/y" }}</td>
+                                <td>{{ data.meeting }}</td>
+                                <td>{{ data.race_no }}</td>
+                                <td>{{ data.time }}</td>
+                                <td>{{ data.distance }}</td>
+                                <td>{{ data.tab_no }}</td>
+                                <td>{{ data.tr_cond }}</td>
+                                <td>{{ data.form_last_10 }}</td>
+                                <td>{{ data.horse }}</td>
+                                <td>{{ data.jockey }}</td>
+                                <td>{{ data.jky_a2e }}</td>
+                                <td>{{ data.barrier }}</td>
+                                <td>{{ data.trainer }}</td>
+                                <td>{{ data.dlr_1 }}</td>
+                                <td>{{ data.form_dist_1 }}</td>
+                                <td>{{ data.form_pos_1 }}</td>
+                                <td>{{ data.form_margin_1 }}</td>
+                                <td>{{ data.class_change }}</td>
+                                <td>{{ data.hist_run_style }}</td>
+                                <td>{% if data.price_sp == None %}{% else %}{{ data.price_sp }}{% endif %}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if trainers_data %}
+    <section class="data_section">
+        <div class="container-fluid">
+            <div class="showing_data_part">
+                <div class="table-responsive">
+                    <table class="table table-hover" width="100%;">
+                        <thead>
+                            <tr>
+                                <th>File Date</th>
+                                <th>Meeting</th>
+                                <th>Race No</th>
+                                <th>Time</th>
+                                <th>Distance</th>
+                                <th>Tab No</th>
+                                <th>Tr-Cond</th>
+                                <th>Form Last 10</th>
+                                <th>Horse</th>
+                                <th>Jockey</th>
+                                <th>Barrier</th>
+                                <th>Trainer</th>
+                                <th>Trn_A2E</th>
+                                <th>DLR-1</th>
+                                <th>Form Dist-1</th>
+                                <th>Form Pos-1</th>
+                                <th>Form Margin-1</th>
+                                <th>Class Change</th>
+                                <th>Hist Run Style</th>
+                                <th>PriceSP</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in trainers_data %}
+                            <tr>
+                                <td>{{ data.file_date|date:"m/d/y" }}</td>
+                                <td>{{ data.meeting }}</td>
+                                <td>{{ data.race_no }}</td>
+                                <td>{{ data.time }}</td>
+                                <td>{{ data.distance }}</td>
+                                <td>{{ data.tab_no }}</td>
+                                <td>{{ data.tr_cond }}</td>
+                                <td>{{ data.form_last_10 }}</td>
+                                <td>{{ data.horse }}</td>
+                                <td>{{ data.jockey }}</td>
+                                <td>{{ data.barrier }}</td>
+                                <td>{{ data.trainer }}</td>
+                                <td>{{ data.trn_a2e }}</td>
+                                <td>{{ data.dlr_1 }}</td>
+                                <td>{{ data.form_dist_1 }}</td>
+                                <td>{{ data.form_pos_1 }}</td>
+                                <td>{{ data.form_margin_1 }}</td>
+                                <td>{{ data.class_change }}</td>
+                                <td>{{ data.hist_run_style }}</td>
+                                <td>{% if data.price_sp == None %}{% else %}{{ data.price_sp }}{% endif %}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if goodTrackSR_data %}
+    <section class="data_section">
+        <div class="container-fluid">
+            <div class="showing_data_part">
+                <div class="table-responsive">
+                    <table class="table table-hover" width="100%;">
+                        <thead>
+                            <tr>
+                                <th>File Date</th>
+                                <th>Meeting</th>
+                                <th>Race No</th>
+                                <th>Time</th>
+                                <th>Distance</th>
+                                <th>Tab No</th>
+                                <th>Tr-Cond</th>
+                                <th>Form Last 10</th>
+                                <th>Horse</th>
+                                <th>Jockey</th>
+                                <th>Barrier</th>
+                                <th>Trainer</th>
+                                <th>DLR-1</th>
+                                <th>Good Starts</th>
+                                <th>Good Wins</th>
+                                <th>Good SR</th>
+                                <th>Form Dist-1</th>
+                                <th>Form Pos-1</th>
+                                <th>Form Margin-1</th>
+                                <th>Class Change</th>
+                                <th>Hist Run Style</th>
+                                <th>BF_Rtd Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in goodTrackSR_data %}
+                            <tr>
+                                <td>{{ data.file_date|date:"m/d/y" }}</td>
+                                <td>{{ data.meeting }}</td>
+                                <td>{{ data.race_no }}</td>
+                                <td>{{ data.time }}</td>
+                                <td>{{ data.distance }}</td>
+                                <td>{{ data.tab_no }}</td>
+                                <td>{{ data.tr_cond }}</td>
+                                <td>{{ data.form_last_10 }}</td>
+                                <td>{{ data.horse }}</td>
+                                <td>{{ data.jockey }}</td>
+                                <td>{{ data.barrier }}</td>
+                                <td>{{ data.trainer }}</td>
+                                <td>{{ data.dlr_1 }}</td>
+                                <td>{{ data.good_starts }}</td>
+                                <td>{{ data.good_wins }}</td>
+                                <td>{{ data.good_sr }}</td>
+                                <td>{{ data.form_dist_1 }}</td>
+                                <td>{{ data.form_pos_1 }}</td>
+                                <td>{{ data.form_margin_1 }}</td>
+                                <td>{{ data.class_change }}</td>
+                                <td>{{ data.hist_run_style }}</td>
+                                <td>{% if data.bf_rtd_price == None %}{% else %}{{ data.bf_rtd_price }}{% endif %}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if softTrackSR_data %}
+    <section class="data_section">
+        <div class="container-fluid">
+            <div class="showing_data_part">
+                <div class="table-responsive">
+                    <table class="table table-hover" width="100%;">
+                        <thead>
+                            <tr>
+                                <th>File Date</th>
+                                <th>Meeting</th>
+                                <th>Race No</th>
+                                <th>Time</th>
+                                <th>Distance</th>
+                                <th>Tab No</th>
+                                <th>Tr-Cond</th>
+                                <th>Form Last 10</th>
+                                <th>Horse</th>
+                                <th>Jockey</th>
+                                <th>Barrier</th>
+                                <th>Trainer</th>
+                                <th>DLR-1</th>
+                                <th>Soft Starts</th>
+                                <th>Soft Wins</th>
+                                <th>Soft SR</th>
+                                <th>Form Dist-1</th>
+                                <th>Form Pos-1</th>
+                                <th>Form Margin-1</th>
+                                <th>Class Change</th>
+                                <th>Hist Run Style</th>
+                                <th>BF_Rtd Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in softTrackSR_data %}
+                            <tr>
+                                <td>{{ data.file_date|date:"m/d/y" }}</td>
+                                <td>{{ data.meeting }}</td>
+                                <td>{{ data.race_no }}</td>
+                                <td>{{ data.time }}</td>
+                                <td>{{ data.distance }}</td>
+                                <td>{{ data.tab_no }}</td>
+                                <td>{{ data.tr_cond }}</td>
+                                <td>{{ data.form_last_10 }}</td>
+                                <td>{{ data.horse }}</td>
+                                <td>{{ data.jockey }}</td>
+                                <td>{{ data.barrier }}</td>
+                                <td>{{ data.trainer }}</td>
+                                <td>{{ data.dlr_1 }}</td>
+                                <td>{{ data.soft_starts }}</td>
+                                <td>{{ data.soft_wins }}</td>
+                                <td>{{ data.soft_sr }}</td>
+                                <td>{{ data.form_dist_1 }}</td>
+                                <td>{{ data.form_pos_1 }}</td>
+                                <td>{{ data.form_margin_1 }}</td>
+                                <td>{{ data.class_change }}</td>
+                                <td>{{ data.hist_run_style }}</td>
+                                <td>{% if data.bf_rtd_price == None %}{% else %}{{ data.bf_rtd_price }}{% endif %}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if heavyTrackSR_data %}
+    <section class="data_section">
+        <div class="container-fluid">
+            <div class="showing_data_part">
+                <div class="table-responsive">
+                    <table class="table table-hover" width="100%;">
+                        <thead>
+                            <tr>
+                                <th>File Date</th>
+                                <th>Meeting</th>
+                                <th>Race No</th>
+                                <th>Time</th>
+                                <th>Distance</th>
+                                <th>Tab No</th>
+                                <th>Tr-Cond</th>
+                                <th>Form Last 10</th>
+                                <th>Horse</th>
+                                <th>Jockey</th>
+                                <th>Barrier</th>
+                                <th>Trainer</th>
+                                <th>DLR-1</th>
+                                <th>Heavy Starts</th>
+                                <th>Heavy Wins</th>
+                                <th>Heavy SR</th>
+                                <th>Form Dist-1</th>
+                                <th>Form Pos-1</th>
+                                <th>Form Margin-1</th>
+                                <th>Class Change</th>
+                                <th>Hist Run Style</th>
+                                <th>BF_Rtd Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in heavyTrackSR_data %}
+                            <tr>
+                                <td>{{ data.file_date|date:"m/d/y" }}</td>
+                                <td>{{ data.meeting }}</td>
+                                <td>{{ data.race_no }}</td>
+                                <td>{{ data.time }}</td>
+                                <td>{{ data.distance }}</td>
+                                <td>{{ data.tab_no }}</td>
+                                <td>{{ data.tr_cond }}</td>
+                                <td>{{ data.form_last_10 }}</td>
+                                <td>{{ data.horse }}</td>
+                                <td>{{ data.jockey }}</td>
+                                <td>{{ data.barrier }}</td>
+                                <td>{{ data.trainer }}</td>
+                                <td>{{ data.dlr_1 }}</td>
+                                <td>{{ data.heavy_starts }}</td>
+                                <td>{{ data.heavy_wins }}</td>
+                                <td>{{ data.heavy_sr }}</td>
+                                <td>{{ data.form_dist_1 }}</td>
+                                <td>{{ data.form_pos_1 }}</td>
+                                <td>{{ data.form_margin_1 }}</td>
+                                <td>{{ data.class_change }}</td>
+                                <td>{{ data.hist_run_style }}</td>
+                                <td>{% if data.bf_rtd_price == None %}{% else %}{{ data.bf_rtd_price }}{% endif %}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if blinkersFT_data %}
+    <section class="data_section">
+        <div class="container-fluid">
+            <div class="showing_data_part">
+                <div class="table-responsive">
+                    <table class="table table-hover" width="100%;">
+                        <thead>
+                            <tr>
+                                <th>File Date</th>
+                                <th>MeetingDate</th>
+                                <th>Track</th>
+                                <th>Race No</th>
+                                <th>Tab No</th>
+                                <th>Horse</th>
+                                <th>GearChange</th>
+                                <th>MeetingId</th>
+                                <th>RaceId</th>
+                                <th>HorseId</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in blinkersFT_data %}
+                            <tr>
+                                <td>{{ data.file_date|date:"m/d/y" }}</td>
+                                <td>{{ data.meeting_date|date:"m/d/y" }}</td>
+                                <td>{{ data.track }}</td>
+                                <td>{{ data.race_no }}</td>
+                                <td>{{ data.tab_no }}</td>
+                                <td>{{ data.horse }}</td>
+                                <td>{{ data.gear_change }}</td>
+                                <td>{{ data.meeting_id }}</td>
+                                <td>{{ data.race_id }}</td>
+                                <td>{{ data.horse_id }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if gelded_data %}
+    <section class="data_section">
+        <div class="container-fluid">
+            <div class="showing_data_part">
+                <div class="table-responsive">
+                    <table class="table table-hover" width="100%;">
+                        <thead>
+                            <tr>
+                                <th>File Date</th>
+                                <th>MeetingDate</th>
+                                <th>Track</th>
+                                <th>Race No</th>
+                                <th>Tab No</th>
+                                <th>Horse</th>
+                                <th>GearChange</th>
+                                <th>MeetingId</th>
+                                <th>RaceId</th>
+                                <th>HorseId</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in gelded_data %}
+                            <tr>
+                                <td>{{ data.file_date|date:"m/d/y" }}</td>
+                                <td>{{ data.meeting_date|date:"m/d/y" }}</td>
+                                <td>{{ data.track }}</td>
+                                <td>{{ data.race_no }}</td>
+                                <td>{{ data.tab_no }}</td>
+                                <td>{{ data.horse }}</td>
+                                <td>{{ data.gear_change }}</td>
+                                <td>{{ data.meeting_id }}</td>
+                                <td>{{ data.race_id }}</td>
+                                <td>{{ data.horse_id }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <div id="loader-overlay">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function() {
+            // Initialize the datepicker
+            $("#search_date").datepicker({
+                onSelect: function(dateText, inst) {
+                    // Get the selected date
+                    var selectedDate = $(this).datepicker('getDate');
+                    
+                    // Convert the date to the desired format
+                    var formattedDate = $.datepicker.formatDate('dd-M-yy', selectedDate);
+                    
+                    // Perform further actions, such as filtering data or submitting a form
+                    console.log("Selected date:", formattedDate);
+                }
+            });
+        });
+    </script>
+  </body>
+</html>

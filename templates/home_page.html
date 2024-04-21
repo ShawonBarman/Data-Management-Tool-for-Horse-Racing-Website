@@ -78,7 +78,7 @@
 
         .import_form{
             width: 500px;
-            margin: 50px auto;
+            margin: 30px auto;
             padding: 30px;
             background: #fafafa;
             border-radius: 10px;
@@ -147,7 +147,7 @@
   </head>
   <body>
     <header>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <nav class="navbar navbar-expand-xl navbar-light bg-light">
             <div class="container-fluid">
                 <a class="navbar-brand" href="{% url 'home' %}">HorseRacingApp</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -166,6 +166,9 @@
                         </li>
                         <li class="nav-item ms-md-3 mx-auto">
                             <a class="nav-link" href="{% url 'meetingsRatingData_view' %}">Meeting Ratings Data View</a>
+                        </li>
+                        <li class="nav-item ms-md-3 mx-auto">
+                            <a class="nav-link" href="{% url 'specialistsData_view' %}">Specialists Data View</a>
                         </li>
                     </ul>
                 </div>
@@ -212,6 +215,10 @@
                     <div class="mb-4">
                         <label for="meeting_ratings_file" class="form-label">Meeting Ratings File</label>
                         <input type="file" class="form-control" id="meeting_ratings_file" name="meeting_ratings_file">
+                    </div>
+                    <div class="mb-4">
+                        <label for="specialists_file" class="form-label">Specialists File</label>
+                        <input type="file" class="form-control" id="specialists_file" name="specialists_file">
                     </div>
                     <div class="submit_button">
                         <button type="submit" class="btn" id="submitBtn">Upload Files</button>

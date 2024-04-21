@@ -48,19 +48,21 @@
         }
 
         .searching_part{
-            background: #e5e3e3;
-            width: 600px;
+            background: #c2d69b;
+            width: 650px;
             margin: 20px auto;
-            padding: 20px 80px;
+            padding: 20px;
             border-radius: 10px;
         }
 
-        .searching_part input{
+        .searching_part input, .searching_part select{
             border-radius: 5px;
             border: none;
             outline: none;
             width: 100%;
             height: 35px;
+            font-size: 0.9rem;
+            border: 1px solid #b8cce4;
         }
 
         .searching_part form button{
@@ -72,6 +74,8 @@
             color: #fff;
             transition: 0.4s all;
             cursor: pointer;
+            font-size: 0.9rem;
+            border: 1px solid #b8cce4;
         }
 
         .searching_part form button:hover{
@@ -194,21 +198,21 @@
         @media (max-width: 767px){
             .searching_part{
                 width: 500px;
-                padding: 15px 40px;
+                padding: 15px;
             }
         }
 
         @media (max-width: 600px){
             .searching_part{
                 width: 300px;
-                padding: 15px 20px;
+                padding: 10px;
             }
         }
     </style>
   </head>
   <body>
     <header>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <nav class="navbar navbar-expand-xl navbar-light bg-light">
             <div class="container-fluid">
                 <a class="navbar-brand" href="{% url 'home' %}">HorseRacingApp</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -227,6 +231,9 @@
                         </li>
                         <li class="nav-item ms-md-3 mx-auto">
                             <a class="nav-link" href="{% url 'meetingsRatingData_view' %}">Meeting Ratings Data View</a>
+                        </li>
+                        <li class="nav-item ms-md-3 mx-auto">
+                            <a class="nav-link" href="{% url 'specialistsData_view' %}">Specialists Data View</a>
                         </li>
                     </ul>
                 </div>
@@ -260,15 +267,22 @@
             <div class="searching_part">
                 <form method="post" action="">
                     {% csrf_token %}
-                    <div class="row d-flex justify-content-center">
-                        <div class="col-8">
-                            {% if current_date %}
-                            <input type="text" class="form-control" id="search_date" name="search_date" value="{{current_date}}">
+                    <div class="row d-flex justify-content-center g-2">
+                        <div class="col-md-6 col-6">
+                            {% if current_file_date %}
+                            <input type="text" class="form-control" id="search_date" name="search_date" value="{{current_file_date|date:'m/d/y'}}">
                             {% else %}
                                 <input type="text" class="form-control" id="search_date" name="search_date" placeholder="Select date">
                             {% endif %}
                         </div>
-                        <div class="col-4">
+                        <div class="col-md-4 col-6">
+                            {% if current_race_no %}
+                            <input type="text" class="form-control" id="search_race_no" name="search_race_no" value="{{current_race_no}}">
+                            {% else %}
+                                <input type="text" class="form-control" id="search_race_no" name="search_race_no" placeholder="Race No">
+                            {% endif %}
+                        </div>
+                        <div class="col-md-2 col-6">
                             <button type="submit" class="btn" name="searchButton">Search</button>
                         </div>
                     </div>
@@ -276,6 +290,161 @@
             </div>
         </div>
     </section>
+
+    {% if filtered_data %}
+    <section class="data_section">
+        <div class="container-fluid">
+            <div class="showing_data_part">
+                <div class="table-responsive">
+                    <table class="table table-hover" width="100%;">
+                        <thead>
+                            <tr>
+                                <th>File Date</th>
+                                <th>Meeting Date</th>
+                                <th>Track</th>
+                                <th>Race Number</th>
+                                <th>Start Time</th>
+                                <th>Distance</th>
+                                <th>Age Restrictions</th>
+                                <th>Class Restrictions</th>
+                                <th>Weight Restrictions</th>
+                                <th>Race Prizemoney</th>
+                                <th>Sex Restrictions</th>
+                                <th>Weight Type</th>
+                                <th>Race Name</th>
+                                <th>Jockeys Can Claim</th>
+                                <th>Grade</th>
+                                <th>Horse Name</th>
+                                <th>Horse Age</th>
+                                <th>Horse Sex</th>
+                                <th>Horse Sire</th>
+                                <th>Horse Dam</th>
+                                <th>Horse Number</th>
+                                <th>Horse Jockey</th>
+                                <th>Horse Barrier</th>
+                                <th>Horse Trainer</th>
+                                <th>Horse Weight</th>
+                                <th>Horse Claim</th>
+                                <th>Horse Last10</th>
+                                <th>Horse Record</th>
+                                <th>Horse Record Distance</th>
+                                <th>Horse Record Track</th>
+                                <th>Horse Record Track Distance</th>
+                                <th>Horse Record Firm</th>
+                                <th>Horse Record Good</th>
+                                <th>Horse Record Soft</th>
+                                <th>Horse Record Heavy</th>
+                                <th>Horse Record Jumps</th>
+                                <th>Horse Record First Up</th>
+                                <th>Horse Record Second Up</th>
+                                <th>Horse Prize Money</th>
+                                <th>Form Barrier</th>
+                                <th>Form Class</th>
+                                <th>Form Distance</th>
+                                <th>Form Jockey</th>
+                                <th>Form Margin</th>
+                                <th>Form Meeting Date</th>
+                                <th>Form Name</th>
+                                <th>Form Other Runners</th>
+                                <th>Form Position</th>
+                                <th>Form Price</th>
+                                <th>Form Time</th>
+                                <th>Form Track</th>
+                                <th>Form Track Condition</th>
+                                <th>Form Weight</th>
+                                <th>Horse Record Synthetic</th>
+                                <th>Meeting ID</th>
+                                <th>Race ID</th>
+                                <th>Horse ID</th>
+                                <th>Horse Trainer ID</th>
+                                <th>Horse Jockey ID</th>
+                                <th>Form Trainer ID</th>
+                                <th>Form Jockey ID</th>
+                                <th>Foal Date</th>
+                                <th>Prizemoney</th>
+                                <th>Sectional</th>
+                                <th>Prizemoney Won</th>
+                                <th>Country</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in filtered_data %}
+                            <tr>
+                                <td>{{ data.file_date|date:"m/d/y" }}</td>
+                                <td>{{ data.meeting_date }}</td>
+                                <td>{{ data.track }}</td>
+                                <td>{{ data.race_number }}</td>
+                                <td>{{ data.start_time }}</td>
+                                <td>{{ data.distance }}</td>
+                                <td>{{ data.age_restrictions }}</td>
+                                <td>{{ data.class_restrictions }}</td>
+                                <td>{{ data.weight_restrictions }}</td>
+                                <td>{{ data.race_prizemoney }}</td>
+                                <td>{{ data.sex_restrictions }}</td>
+                                <td>{{ data.weight_type }}</td>
+                                <td>{{ data.race_name }}</td>
+                                <td>{{ data.jockeys_can_claim }}</td>
+                                <td>{{ data.grade }}</td>
+                                <td>{{ data.horse_name }}</td>
+                                <td>{{ data.horse_age }}</td>
+                                <td>{{ data.horse_sex }}</td>
+                                <td>{{ data.horse_sire }}</td>
+                                <td>{{ data.horse_dam }}</td>
+                                <td>{{ data.horse_number }}</td>
+                                <td>{{ data.horse_jockey }}</td>
+                                <td>{{ data.horse_barrier }}</td>
+                                <td>{{ data.horse_trainer }}</td>
+                                <td>{{ data.horse_weight }}</td>
+                                <td>{{ data.horse_claim }}</td>
+                                <td>{{ data.horse_last10 }}</td>
+                                <td>{{ data.horse_record }}</td>
+                                <td>{{ data.horse_record_distance }}</td>
+                                <td>{{ data.horse_record_track }}</td>
+                                <td>{{ data.horse_record_track_distance }}</td>
+                                <td>{{ data.horse_record_firm }}</td>
+                                <td>{{ data.horse_record_good }}</td>
+                                <td>{{ data.horse_record_soft }}</td>
+                                <td>{{ data.horse_record_heavy }}</td>
+                                <td>{{ data.horse_record_jumps }}</td>
+                                <td>{{ data.horse_record_first_up }}</td>
+                                <td>{{ data.horse_record_second_up }}</td>
+                                <td>{{ data.horse_prize_money }}</td>
+                                <td>{{ data.form_barrier }}</td>
+                                <td>{{ data.form_class }}</td>
+                                <td>{{ data.form_distance }}</td>
+                                <td>{{ data.form_jockey }}</td>
+                                <td>{{ data.form_margin }}</td>
+                                <td>{{ data.form_meeting_date }}</td>
+                                <td>{{ data.form_name }}</td>
+                                <td>{{ data.form_other_runners }}</td>
+                                <td>{{ data.form_position }}</td>
+                                <td>{{ data.form_price }}</td>
+                                <td>{{ data.form_time }}</td>
+                                <td>{{ data.form_track }}</td>
+                                <td>{{ data.form_track_condition }}</td>
+                                <td>{{ data.form_weight }}</td>
+                                <td>{{ data.horse_record_synthetic }}</td>
+                                <td>{{ data.meeting_id }}</td>
+                                <td>{{ data.race_id }}</td>
+                                <td>{{ data.horse_id }}</td>
+                                <td>{{ data.horse_trainer_id }}</td>
+                                <td>{{ data.horse_jockey_id }}</td>
+                                <td>{{ data.form_trainer_id }}</td>
+                                <td>{{ data.form_jockey_id }}</td>
+                                <td>{{ data.foal_date }}</td>
+                                <td>{{ data.prizemoney }}</td>
+                                <td>{{ data.sectional }}</td>
+                                <td>{{ data.prizemoney_won }}</td>
+                                <td>{{ data.country }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
 
     <section class="data_section">
         <div class="container-fluid">

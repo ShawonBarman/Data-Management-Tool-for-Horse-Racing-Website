@@ -6,4 +6,5 @@ urlpatterns = [
     path("allMeetingsDataView/", views.allMeetingsData_view, name="allMeetingsData_view"),
     path("fromAllMeetingsData_view/", views.fromAllMeetingsData_view, name="fromAllMeetingsData_view"),
     path("meetingsRatingData_view/", views.meetingsRatingData_view, name="meetingsRatingData_view"),
+    path("specialistsData_view/", views.specialistsData_view, name="specialistsData_view"),
 ]

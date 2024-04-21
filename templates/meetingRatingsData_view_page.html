@@ -48,19 +48,21 @@
         }
 
         .searching_part{
-            background: #e5e3e3;
-            width: 600px;
+            background: #c2d69b;
+            width: 650px;
             margin: 20px auto;
-            padding: 20px 80px;
+            padding: 20px;
             border-radius: 10px;
         }
 
-        .searching_part input{
+        .searching_part input, .searching_part select{
             border-radius: 5px;
             border: none;
             outline: none;
             width: 100%;
             height: 35px;
+            font-size: 0.9rem;
+            border: 1px solid #b8cce4;
         }
 
         .searching_part form button{
@@ -72,6 +74,8 @@
             color: #fff;
             transition: 0.4s all;
             cursor: pointer;
+            font-size: 0.9rem;
+            border: 1px solid #b8cce4;
         }
 
         .searching_part form button:hover{
@@ -194,21 +198,21 @@
         @media (max-width: 767px){
             .searching_part{
                 width: 500px;
-                padding: 15px 40px;
+                padding: 15px;
             }
         }
 
         @media (max-width: 600px){
             .searching_part{
                 width: 300px;
-                padding: 15px 20px;
+                padding: 10px;
             }
         }
     </style>
   </head>
   <body>
     <header>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <nav class="navbar navbar-expand-xl navbar-light bg-light">
             <div class="container-fluid">
                 <a class="navbar-brand" href="{% url 'home' %}">HorseRacingApp</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -227,6 +231,9 @@
                         </li>
                         <li class="nav-item ms-md-3 mx-auto">
                             <a class="nav-link active" aria-current="page" href="{% url 'meetingsRatingData_view' %}">Meeting Ratings Data View</a>
+                        </li>
+                        <li class="nav-item ms-md-3 mx-auto">
+                            <a class="nav-link" href="{% url 'specialistsData_view' %}">Specialists Data View</a>
                         </li>
                     </ul>
                 </div>
@@ -260,15 +267,29 @@
             <div class="searching_part">
                 <form method="post" action="">
                     {% csrf_token %}
-                    <div class="row d-flex justify-content-center">
-                        <div class="col-8">
-                            {% if current_date %}
-                            <input type="text" class="form-control" id="search_date" name="search_date" value="{{current_date}}">
+                    <div class="row d-flex justify-content-center g-2">
+                        <div class="col-md-4 col-6">
+                            {% if current_file_date %}
+                            <input type="text" class="form-control" id="search_date" name="search_date" value="{{current_file_date|date:'m/d/y'}}">
                             {% else %}
                                 <input type="text" class="form-control" id="search_date" name="search_date" placeholder="Select date">
                             {% endif %}
                         </div>
-                        <div class="col-4">
+                        <div class="col-md-3 col-6">
+                            {% if current_race_no %}
+                            <input type="text" class="form-control" id="search_race_no" name="search_race_no" value="{{current_race_no}}">
+                            {% else %}
+                                <input type="text" class="form-control" id="search_race_no" name="search_race_no" placeholder="Race No">
+                            {% endif %}
+                        </div>
+                        <div class="col-md-3 col-6">
+                            {% if current_tab_no %}
+                            <input type="text" class="form-control" id="search_tab_no" name="search_tab_no" value="{{current_tab_no}}">
+                            {% else %}
+                                <input type="text" class="form-control" id="search_tab_no" name="search_tab_no" placeholder="Tab No">
+                            {% endif %}
+                        </div>
+                        <div class="col-md-2 col-6">
                             <button type="submit" class="btn" name="searchButton">Search</button>
                         </div>
                     </div>
@@ -276,6 +297,183 @@
             </div>
         </div>
     </section>
+
+    {% if filtered_data %}
+    <section class="data_section">
+        <div class="container-fluid">
+            <div class="showing_data_part">
+                <div class="table-responsive">
+                    <table class="table table-hover" width="100%;">
+                        <thead>
+                            <tr>
+                                <th>File Date</th>
+                                <th>Meeting</th>
+                                <th>Track Condition</th>
+                                <th>Time</th>
+                                <th>Race Number</th>
+                                <th>Race Class</th>
+                                <th>Class Change</th>
+                                <th>Distance</th>
+                                <th>Distance Change</th>
+                                <th>Form Last 10</th>
+                                <th>Tab No</th>
+                                <th>Horse</th>
+                                <th>Barrier</th>
+                                <th>Barrier Change</th>
+                                <th>Prediction</th>
+                                <th>Rating</th>
+                                <th>Jky</th>
+                                <th>Trn</th>
+                                <th>Rank_Class</th>
+                                <th>Rank_LSFPos</th>
+                                <th>Rank_LSFPos-2</th>
+                                <th>Rank_DistChg</th>
+                                <th>Rank_DLR</th>
+                                <th>Rank_MktRk</th>
+                                <th>Rank_RFS</th>
+                                <th>Rank_PFScore</th>
+                                <th>Rank_StlgPos</th>
+                                <th>Rank_Barrier</th>
+                                <th>Rank_Weight</th>
+                                <th>Jockey</th>
+                                <th>Jky_A2E</th>
+                                <th>Weight</th>
+                                <th>WghtChg</th>
+                                <th>priceSP</th>
+                                <th>HistRunStyle</th>
+                                <th>PredStlgPos</th>
+                                <th>Trainer</th>
+                                <th>Trn_A2E</th>
+                                <th>MktRk</th>
+                                <th>DLR-1</th>
+                                <th>FormMargin-1</th>
+                                <th>FormDist-1</th>
+                                <th>RunnerTime</th>
+                                <th>Last600m</th>
+                                <th>AveSpd(Mts/Sec)</th>
+                                <th>FormJky-1</th>
+                                <th>FormWeight-1</th>
+                                <th>FormBarrier-1</th>
+                                <th>FormTr-Cond-1</th>
+                                <th>FormCl-1</th>
+                                <th>FormOtherRunners-1</th>
+                                <th>FormMargin-2</th>
+                                <th>FormDist-2</th>
+                                <th>FormTime-2</th>
+                                <th>SecTime-2</th>
+                                <th>FormJky-2</th>
+                                <th>FormWeight-2</th>
+                                <th>FormBarrier-2</th>
+                                <th>FormTrCond-2</th>
+                                <th>FormClass-2</th>
+                                <th>FormOtherRunners-2</th>
+                                <th>Starts</th>
+                                <th>W-SR</th>
+                                <th>Dist-St</th>
+                                <th>DistSR</th>
+                                <th>Tr-St</th>
+                                <th>Tr-SR</th>
+                                <th>G-St</th>
+                                <th>G-W</th>
+                                <th>G-SR</th>
+                                <th>S-St</th>
+                                <th>S-W</th>
+                                <th>S-SR</th>
+                                <th>H-St</th>
+                                <th>H-W</th>
+                                <th>H-SR</th>
+                                <th>Starters</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in filtered_data %}
+                            <tr>
+                                <td>{{ data.file_date|date:"m/d/y" }}</td>
+                                <td>{{ data.meeting }}</td>
+                                <td>{{ data.track_condition }}</td>
+                                <td>{{ data.time }}</td>
+                                <td>{{ data.race_number }}</td>
+                                <td>{{ data.race_class }}</td>
+                                <td>{{ data.class_change }}</td>
+                                <td>{{ data.distance }}</td>
+                                <td>{{ data.distance_change }}</td>
+                                <td>{{ data.form_last_10 }}</td>
+                                <td>{{ data.tab_no }}</td>
+                                <td>{{ data.horse }}</td>
+                                <td>{{ data.barrier }}</td>
+                                <td>{{ data.barrier_change }}</td>
+                                <td>{{ data.prediction }}</td>
+                                <td>{{ data.rating }}</td>
+                                <td>{{ data.jky }}</td>
+                                <td>{{ data.trn }}</td>
+                                <td>{{ data.rank_class }}</td>
+                                <td>{{ data.rank_lsf_pos }}</td>
+                                <td>{{ data.rank_lsf_pos_2 }}</td>
+                                <td>{{ data.rank_dist_chg }}</td>
+                                <td>{{ data.rank_dlr }}</td>
+                                <td>{{ data.rank_mkt_rk }}</td>
+                                <td>{{ data.rank_rfs }}</td>
+                                <td>{{ data.rank_pfscore }}</td>
+                                <td>{{ data.rank_stlg_pos }}</td>
+                                <td>{{ data.rank_barrier }}</td>
+                                <td>{{ data.rank_weight }}</td>
+                                <td>{{ data.jockey }}</td>
+                                <td>{{ data.jockey_a2e }}</td>
+                                <td>{{ data.weight }}</td>
+                                <td>{{ data.weight_change }}</td>
+                                <td>{{ data.price_sp }}</td>
+                                <td>{{ data.hist_run_style }}</td>
+                                <td>{{ data.pred_stlg_pos }}</td>
+                                <td>{{ data.trainer }}</td>
+                                <td>{{ data.trainer_a2e }}</td>
+                                <td>{{ data.mkt_rk }}</td>
+                                <td>{{ data.dlr_1 }}</td>
+                                <td>{{ data.form_margin_1 }}</td>
+                                <td>{{ data.form_dist_1 }}</td>
+                                <td>{{ data.runner_time }}</td>
+                                <td>{{ data.last_600m }}</td>
+                                <td>{{ data.ave_spd_mts_sec }}</td>
+                                <td>{{ data.form_jky_1 }}</td>
+                                <td>{{ data.form_weight_1 }}</td>
+                                <td>{{ data.form_barrier_1 }}</td>
+                                <td>{{ data.form_tr_cond_1 }}</td>
+                                <td>{{ data.form_cl_1 }}</td>
+                                <td>{{ data.form_other_runners_1 }}</td>
+                                <td>{{ data.form_margin_2 }}</td>
+                                <td>{{ data.form_dist_2 }}</td>
+                                <td>{{ data.form_time_2 }}</td>
+                                <td>{{ data.sec_time_2 }}</td>
+                                <td>{{ data.form_jky_2 }}</td>
+                                <td>{{ data.form_weight_2 }}</td>
+                                <td>{{ data.form_barrier_2 }}</td>
+                                <td>{{ data.form_tr_cond_2 }}</td>
+                                <td>{{ data.form_class_2 }}</td>
+                                <td>{{ data.form_other_runners_2 }}</td>
+                                <td>{{ data.starts }}</td>
+                                <td>{{ data.w_sr }}</td>
+                                <td>{{ data.dist_st }}</td>
+                                <td>{{ data.dist_sr }}</td>
+                                <td>{{ data.tr_st }}</td>
+                                <td>{{ data.tr_sr }}</td>
+                                <td>{{ data.g_st }}</td>
+                                <td>{{ data.g_w }}</td>
+                                <td>{{ data.g_sr }}</td>
+                                <td>{{ data.s_st }}</td>
+                                <td>{{ data.s_w }}</td>
+                                <td>{{ data.s_sr }}</td>
+                                <td>{{ data.h_st }}</td>
+                                <td>{{ data.h_w }}</td>
+                                <td>{{ data.h_sr }}</td>
+                                <td>{{ data.starters }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
 
     <section class="data_section">
         <div class="container-fluid">
